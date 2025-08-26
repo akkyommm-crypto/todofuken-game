@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>都道府県形当てゲーム（ヒントボタン付き）</title>
+<title>都道府県形当てゲーム（完全版）</title>
 <style>
 body{font-family:sans-serif;display:flex;flex-direction:column;align-items:center;margin:10px;}
 button{font-size:18px;padding:12px;margin:5px;border-radius:6px;width:90%;max-width:400px;}
@@ -35,6 +35,7 @@ input{font-size:18px;padding:12px;margin:5px;border-radius:6px;width:90%;max-wid
   <div id="hint"></div>
   <input type="text" id="guess" placeholder="都道府県名を入力">
   <button id="checkBtn">答え合わせ</button>
+  <button id="backBtn">モード選択に戻る</button>
   <p id="result"></p>
   <p id="score"></p>
 </div>
@@ -97,6 +98,7 @@ const regionScore = {};
 const prefImg=document.getElementById('prefImg');
 const guessInput=document.getElementById('guess');
 const checkBtn=document.getElementById('checkBtn');
+const backBtn=document.getElementById('backBtn');
 const resultEl=document.getElementById('result');
 const scoreEl=document.getElementById('score');
 const hintEl=document.getElementById('hint');
@@ -109,12 +111,26 @@ hintBtn.onclick = () => {
   }
 };
 
+backBtn.onclick = () => {
+  document.getElementById('gameArea').style.display='none';
+  document.getElementById('modeSelect').style.display='flex';
+  remainingPrefectures = [];
+  currentPref = null;
+  correctCount = 0;
+  totalCount = 0;
+  resultEl.textContent = '';
+  scoreEl.textContent = '';
+  hintEl.style.display = 'none';
+  prefImg.src = '';
+  guessInput.value = '';
+};
+
 function startMode(mode){
   let selectedPrefectures;
   if(mode==='all'){
     selectedPrefectures = [...prefectures];
   } else if(mode==='tohoku'){
-    selectedPrefectures = prefectures.filter(p=>p.region==='東北地方' || p.name==='北海道');
+    selectedPrefectures = prefectures.filter(p=>p.region==='東北地方');
   } else if(mode==='kanto'){
     selectedPrefectures = prefectures.filter(p=>p.region==='関東地方');
   } else if(mode==='chubu'){
@@ -146,7 +162,7 @@ function newQuestion(){
       regionText += `${region} ${regionScore[region]}問正解\n`;
     }
     resultEl.textContent = `全問終了！正解 ${correctCount}/${totalCount} 問\n` + regionText;
-    prefImg.src = '';
+    prefImg.src = 'otsukaresama.png'; // 全問終了時の画像
     hintEl.style.display='none';
     return;
   }
