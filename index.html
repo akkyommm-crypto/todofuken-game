@@ -13,6 +13,7 @@ input{font-size:18px;padding:12px;margin:5px;border-radius:6px;width:90%;max-wid
 .correct{color:#0a0;font-weight:bold;}
 .wrong{color:#c00;font-weight:bold;}
 #score{margin:5px;font-size:16px;white-space:pre-line;}
+#modeSelect, #gameArea{display:flex; flex-direction:column; align-items:center;}
 </style>
 </head>
 <body>
@@ -29,7 +30,7 @@ input{font-size:18px;padding:12px;margin:5px;border-radius:6px;width:90%;max-wid
   <button onclick="startMode('all')">47都道府県</button>
 </div>
 
-<div id="gameArea" style="display:none; flex-direction:column; align-items:center;">
+<div id="gameArea" style="display:none;">
   <img id="prefImg" src="" alt="都道府県の形">
   <button id="hintBtn">ヒントを見る</button>
   <div id="hint"></div>
@@ -162,7 +163,7 @@ function newQuestion(){
       regionText += `${region} ${regionScore[region]}問正解\n`;
     }
     resultEl.textContent = `全問終了！正解 ${correctCount}/${totalCount} 問\n` + regionText;
-    prefImg.src = 'otsukaresama.png'; // 全問終了時の画像
+    prefImg.src = 'otsukaresama.png';
     hintEl.style.display='none';
     return;
   }
