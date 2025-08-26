@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>都道府県形当てゲーム（7県版）</title>
+<title>都道府県形当てゲーム（重複なし7県版）</title>
 <style>
 body{font-family:sans-serif;display:flex;flex-direction:column;align-items:center;margin:10px;}
 #prefImg{width:90%;max-width:400px;margin:10px 0;border:1px solid #ccc;border-radius:8px;}
@@ -35,6 +35,7 @@ const prefectures = [
   {name:'山形県', img:'yamagata.png'}
 ];
 
+let remainingPrefectures = [...prefectures]; // 出題済み管理用
 let currentPref, correctCount=0, totalCount=0;
 
 const prefImg=document.getElementById('prefImg');
@@ -44,10 +45,17 @@ const resultEl=document.getElementById('result');
 const scoreEl=document.getElementById('score');
 
 function newQuestion(){
-  currentPref = prefectures[Math.floor(Math.random()*prefectures.length)];
+  if(remainingPrefectures.length === 0){
+    resultEl.textContent = `全問終了！正解 ${correctCount} / ${totalCount} 問`;
+    prefImg.src = '';
+    return;
+  }
+  const index = Math.floor(Math.random()*remainingPrefectures.length);
+  currentPref = remainingPrefectures[index];
   prefImg.src = currentPref.img;
-  guessInput.value='';
-  resultEl.textContent='';
+  guessInput.value = '';
+  resultEl.textContent = '';
+  remainingPrefectures.splice(index,1); // 出題済みとして削除
 }
 
 checkBtn.onclick=()=>{
