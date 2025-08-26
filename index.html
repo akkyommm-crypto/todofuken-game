@@ -3,87 +3,141 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>都道府県形当てゲーム（全47県版）</title>
+<title>都道府県形当てゲーム（ヒントボタン付き）</title>
 <style>
 body{font-family:sans-serif;display:flex;flex-direction:column;align-items:center;margin:10px;}
+button{font-size:18px;padding:12px;margin:5px;border-radius:6px;width:90%;max-width:400px;}
 #prefImg{width:90%;max-width:400px;margin:10px 0;border:1px solid #ccc;border-radius:8px;}
-input,button{font-size:18px;padding:12px;margin:5px;border-radius:6px;width:90%;max-width:400px;}
+#hint{width:90%;max-width:400px;height:50px;margin:5px 0;background:#eef;display:flex;align-items:center;justify-content:center;font-size:16px;border-radius:6px;display:none;}
+input{font-size:18px;padding:12px;margin:5px;border-radius:6px;width:90%;max-width:400px;}
 .correct{color:#0a0;font-weight:bold;}
 .wrong{color:#c00;font-weight:bold;}
 #score{margin:5px;font-size:16px;white-space:pre-line;}
 </style>
 </head>
 <body>
-<h2>都道府県の形を当てよう！</h2>
 
-<img id="prefImg" src="" alt="都道府県の形">
-<input type="text" id="guess" placeholder="都道府県名を入力">
-<button id="checkBtn">答え合わせ</button>
+<div id="modeSelect">
+  <h2>モードを選んでね</h2>
+  <button onclick="startMode('tohoku')">東北地方（北海道含む）</button>
+  <button onclick="startMode('kanto')">関東地方</button>
+  <button onclick="startMode('chubu')">中部地方</button>
+  <button onclick="startMode('kinki')">近畿地方</button>
+  <button onclick="startMode('chugoku')">中国地方</button>
+  <button onclick="startMode('shikoku')">四国地方</button>
+  <button onclick="startMode('kyushu')">九州地方</button>
+  <button onclick="startMode('all')">47都道府県</button>
+</div>
 
-<p id="result"></p>
-<p id="score"></p>
+<div id="gameArea" style="display:none; flex-direction:column; align-items:center;">
+  <img id="prefImg" src="" alt="都道府県の形">
+  <button id="hintBtn">ヒントを見る</button>
+  <div id="hint"></div>
+  <input type="text" id="guess" placeholder="都道府県名を入力">
+  <button id="checkBtn">答え合わせ</button>
+  <p id="result"></p>
+  <p id="score"></p>
+</div>
 
 <script>
-// 47都道府県データ（画像ファイル名・地方を追加）
+// 都道府県データ
 const prefectures = [
-  {name:'北海道', img:'hokkaido.png', region:'北海道地方'},
-  {name:'青森県', img:'aomori.png', region:'東北地方'},
-  {name:'岩手県', img:'iwate.png', region:'東北地方'},
-  {name:'宮城県', img:'miyagi.png', region:'東北地方'},
-  {name:'秋田県', img:'akita.png', region:'東北地方'},
-  {name:'山形県', img:'yamagata.png', region:'東北地方'},
-  {name:'福島県', img:'fukushima.png', region:'東北地方'},
-  {name:'茨城県', img:'ibaraki.png', region:'関東地方'},
-  {name:'栃木県', img:'tochigi.png', region:'関東地方'},
-  {name:'群馬県', img:'gunma.png', region:'関東地方'},
-  {name:'埼玉県', img:'saitama.png', region:'関東地方'},
-  {name:'千葉県', img:'chiba.png', region:'関東地方'},
-  {name:'東京都', img:'tokyo.png', region:'関東地方'},
-  {name:'神奈川県', img:'kanagawa.png', region:'関東地方'},
-  {name:'新潟県', img:'niigata.png', region:'中部地方'},
-  {name:'富山県', img:'toyama.png', region:'中部地方'},
-  {name:'石川県', img:'ishikawa.png', region:'中部地方'},
-  {name:'福井県', img:'fukui.png', region:'中部地方'},
-  {name:'山梨県', img:'yamanashi.png', region:'中部地方'},
-  {name:'長野県', img:'nagano.png', region:'中部地方'},
-  {name:'岐阜県', img:'gifu.png', region:'中部地方'},
-  {name:'静岡県', img:'shizuoka.png', region:'中部地方'},
-  {name:'愛知県', img:'aichi.png', region:'中部地方'},
-  {name:'三重県', img:'mie.png', region:'近畿地方'},
-  {name:'滋賀県', img:'shiga.png', region:'近畿地方'},
-  {name:'京都府', img:'kyoto.png', region:'近畿地方'},
-  {name:'大阪府', img:'osaka.png', region:'近畿地方'},
-  {name:'兵庫県', img:'hyogo.png', region:'近畿地方'},
-  {name:'奈良県', img:'nara.png', region:'近畿地方'},
-  {name:'和歌山県', img:'wakayama.png', region:'近畿地方'},
-  {name:'鳥取県', img:'tottori.png', region:'中国地方'},
-  {name:'島根県', img:'shimane.png', region:'中国地方'},
-  {name:'岡山県', img:'okayama.png', region:'中国地方'},
-  {name:'広島県', img:'hiroshima.png', region:'中国地方'},
-  {name:'山口県', img:'yamaguchi.png', region:'中国地方'},
-  {name:'徳島県', img:'tokushima.png', region:'四国地方'},
-  {name:'香川県', img:'kagawa.png', region:'四国地方'},
-  {name:'愛媛県', img:'ehime.png', region:'四国地方'},
-  {name:'高知県', img:'kochi.png', region:'四国地方'},
-  {name:'福岡県', img:'fukuoka.png', region:'九州地方'},
-  {name:'佐賀県', img:'saga.png', region:'九州地方'},
-  {name:'長崎県', img:'nagasaki.png', region:'九州地方'},
-  {name:'熊本県', img:'kumamoto.png', region:'九州地方'},
-  {name:'大分県', img:'oita.png', region:'九州地方'},
-  {name:'宮崎県', img:'miyazaki.png', region:'九州地方'},
-  {name:'鹿児島県', img:'kagoshima.png', region:'九州地方'},
-  {name:'沖縄県', img:'okinawa.png', region:'九州地方'}
+  {name:'北海道', img:'hokkaido.png', region:'東北地方', hint:'札幌市が県庁所在地'},
+  {name:'青森県', img:'aomori.png', region:'東北地方', hint:'りんごが有名'},
+  {name:'岩手県', img:'iwate.png', region:'東北地方', hint:'わんこそば'},
+  {name:'宮城県', img:'miyagi.png', region:'東北地方', hint:'仙台牛タン'},
+  {name:'秋田県', img:'akita.png', region:'東北地方', hint:'秋田犬'},
+  {name:'山形県', img:'yamagata.png', region:'東北地方', hint:'さくらんぼ'},
+  {name:'福島県', img:'fukushima.png', region:'東北地方', hint:'桃の生産量が多い'},
+  {name:'茨城県', img:'ibaraki.png', region:'関東地方', hint:'納豆が有名'},
+  {name:'栃木県', img:'tochigi.png', region:'関東地方', hint:'日光東照宮'},
+  {name:'群馬県', img:'gunma.png', region:'関東地方', hint:'温泉地が多い'},
+  {name:'埼玉県', img:'saitama.png', region:'関東地方', hint:'鉄道博物館'},
+  {name:'千葉県', img:'chiba.png', region:'関東地方', hint:'東京ディズニーランド'},
+  {name:'東京都', img:'tokyo.png', region:'関東地方', hint:'日本の首都'},
+  {name:'神奈川県', img:'kanagawa.png', region:'関東地方', hint:'横浜中華街'},
+  {name:'新潟県', img:'niigata.png', region:'中部地方', hint:'米どころ'},
+  {name:'富山県', img:'toyama.png', region:'中部地方', hint:'富山湾の海鮮'},
+  {name:'石川県', img:'ishikawa.png', region:'中部地方', hint:'金箔'},
+  {name:'福井県', img:'fukui.png', region:'中部地方', hint:'恐竜博物館'},
+  {name:'山梨県', img:'yamanashi.png', region:'中部地方', hint:'富士山の麓'},
+  {name:'長野県', img:'nagano.png', region:'中部地方', hint:'長野オリンピック開催地'},
+  {name:'岐阜県', img:'gifu.png', region:'中部地方', hint:'白川郷'},
+  {name:'静岡県', img:'shizuoka.png', region:'中部地方', hint:'お茶と富士山'},
+  {name:'愛知県', img:'aichi.png', region:'中部地方', hint:'名古屋城'},
+  {name:'三重県', img:'mie.png', region:'近畿地方', hint:'伊勢神宮'},
+  {name:'滋賀県', img:'shiga.png', region:'近畿地方', hint:'琵琶湖'},
+  {name:'京都府', img:'kyoto.png', region:'近畿地方', hint:'金閣寺'},
+  {name:'大阪府', img:'osaka.png', region:'近畿地方', hint:'道頓堀'},
+  {name:'兵庫県', img:'hyogo.png', region:'近畿地方', hint:'神戸牛'},
+  {name:'奈良県', img:'nara.png', region:'近畿地方', hint:'大仏'},
+  {name:'和歌山県', img:'wakayama.png', region:'近畿地方', hint:'梅干し'},
+  {name:'鳥取県', img:'tottori.png', region:'中国地方', hint:'砂丘'},
+  {name:'島根県', img:'shimane.png', region:'中国地方', hint:'出雲大社'},
+  {name:'岡山県', img:'okayama.png', region:'中国地方', hint:'桃太郎'},
+  {name:'広島県', img:'hiroshima.png', region:'中国地方', hint:'原爆ドーム'},
+  {name:'山口県', img:'yamaguchi.png', region:'中国地方', hint:'錦帯橋'},
+  {name:'徳島県', img:'tokushima.png', region:'四国地方', hint:'阿波おどり'},
+  {name:'香川県', img:'kagawa.png', region:'四国地方', hint:'讃岐うどん'},
+  {name:'愛媛県', img:'ehime.png', region:'四国地方', hint:'みかん'},
+  {name:'高知県', img:'kochi.png', region:'四国地方', hint:'坂本龍馬'},
+  {name:'福岡県', img:'fukuoka.png', region:'九州地方', hint:'博多ラーメン'},
+  {name:'佐賀県', img:'saga.png', region:'九州地方', hint:'有田焼'},
+  {name:'長崎県', img:'nagasaki.png', region:'九州地方', hint:'原爆資料館'},
+  {name:'熊本県', img:'kumamoto.png', region:'九州地方', hint:'熊本城'},
+  {name:'大分県', img:'oita.png', region:'九州地方', hint:'温泉'},
+  {name:'宮崎県', img:'miyazaki.png', region:'九州地方', hint:'マンゴー'},
+  {name:'鹿児島県', img:'kagoshima.png', region:'九州地方', hint:'桜島'},
+  {name:'沖縄県', img:'okinawa.png', region:'九州地方', hint:'青い海'}
 ];
 
-let remainingPrefectures = [...prefectures];
+let remainingPrefectures = [];
 let currentPref, correctCount=0, totalCount=0;
-const regionScore = {}; // 地方ごとの正解数
-
+const regionScore = {};
 const prefImg=document.getElementById('prefImg');
 const guessInput=document.getElementById('guess');
 const checkBtn=document.getElementById('checkBtn');
 const resultEl=document.getElementById('result');
 const scoreEl=document.getElementById('score');
+const hintEl=document.getElementById('hint');
+const hintBtn=document.getElementById('hintBtn');
+
+hintBtn.onclick = () => {
+  if(currentPref){
+    hintEl.style.display='flex';
+    hintEl.textContent = `ヒント：${currentPref.hint}`;
+  }
+};
+
+function startMode(mode){
+  let selectedPrefectures;
+  if(mode==='all'){
+    selectedPrefectures = [...prefectures];
+  } else if(mode==='tohoku'){
+    selectedPrefectures = prefectures.filter(p=>p.region==='東北地方' || p.name==='北海道');
+  } else if(mode==='kanto'){
+    selectedPrefectures = prefectures.filter(p=>p.region==='関東地方');
+  } else if(mode==='chubu'){
+    selectedPrefectures = prefectures.filter(p=>p.region==='中部地方');
+  } else if(mode==='kinki'){
+    selectedPrefectures = prefectures.filter(p=>p.region==='近畿地方');
+  } else if(mode==='chugoku'){
+    selectedPrefectures = prefectures.filter(p=>p.region==='中国地方');
+  } else if(mode==='shikoku'){
+    selectedPrefectures = prefectures.filter(p=>p.region==='四国地方');
+  } else if(mode==='kyushu'){
+    selectedPrefectures = prefectures.filter(p=>p.region==='九州地方');
+  }
+
+  remainingPrefectures = [...selectedPrefectures];
+  correctCount=0;
+  totalCount=0;
+  for(const key in regionScore) delete regionScore[key];
+
+  document.getElementById('modeSelect').style.display='none';
+  document.getElementById('gameArea').style.display='flex';
+  newQuestion();
+}
 
 function newQuestion(){
   if(remainingPrefectures.length === 0){
@@ -93,6 +147,7 @@ function newQuestion(){
     }
     resultEl.textContent = `全問終了！正解 ${correctCount}/${totalCount} 問\n` + regionText;
     prefImg.src = '';
+    hintEl.style.display='none';
     return;
   }
   const index = Math.floor(Math.random()*remainingPrefectures.length);
@@ -100,6 +155,7 @@ function newQuestion(){
   prefImg.src = currentPref.img;
   guessInput.value = '';
   resultEl.textContent = '';
+  hintEl.style.display='none';
   remainingPrefectures.splice(index,1);
 }
 
@@ -118,8 +174,6 @@ checkBtn.onclick=()=>{
   scoreEl.textContent=`正解 ${correctCount} / ${totalCount} 問`;
   setTimeout(newQuestion,1000);
 }
-
-newQuestion();
 </script>
 </body>
 </html>
