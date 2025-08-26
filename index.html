@@ -1,112 +1,47 @@
+
 <!doctype html>
 <html lang="ja">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>都道府県形当てゲーム（完成版）</title>
+<title>都道府県形当てゲーム 完全版</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <style>
-  body {
-    font-family: 'Roboto', sans-serif;
-    text-align: center;
-    margin: 0;
-    padding: 20px;
-    min-height: 100vh;
-    background: linear-gradient(135deg, #1d2671, #c33764);
-    color: #fff;
-  }
-  h2 {
-    text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
-  }
-  button {
-    background-color: #ffcc00;
-    color: #222;
-    border: none;
-    border-radius: 12px;
-    padding: 14px 24px;
-    font-size: 18px;
-    margin: 10px auto;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: block;
-    width: 100%;
-    max-width: 300px;
-    box-sizing: border-box;
-  }
-  button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 15px #ffcc00;
-  }
-  #prefImg {
-    width:300px;
-    height:300px;
-    object-fit:contain;
-    border: 3px solid #fff;
-    border-radius:12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    margin: 20px auto;
-  }
-  #hint {
-    width:100%; max-width:300px;
-    min-height:50px;
-    background:#eef;
-    color:#222;
-    border-radius:8px;
-    display:none;
-    margin:10px auto;
-    padding:10px;
-  }
-  #result {
-    width:100%; max-width:300px;
-    min-height:40px;
-    margin: 10px auto;
-    font-size: 18px;
-  }
-  input {
-    width:100%; max-width:300px;
-    padding:12px;
-    border-radius:8px;
-    border:none;
-    margin:10px auto;
-    font-size:18px;
-    box-sizing:border-box;
-  }
-  .correct { color: #0f0; font-weight: bold; animation: pop 0.3s; }
-  .wrong { color: #f00; font-weight: bold; animation: shake 0.3s; }
-  #score {
-    margin: 10px auto;
-    font-size: 16px;
-    white-space: pre-line;
-  }
-  @keyframes pop {
-    0% { transform: scale(0.5); }
-    100% { transform: scale(1); }
-  }
-  @keyframes shake {
-    0%,100% { transform: translateX(0); }
-    20%,60% { transform: translateX(-5px); }
-    40%,80% { transform: translateX(5px); }
-  }
-  #modeSelect, #gameArea, #resultScreen {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  #gameArea, #modeSelect {
-    max-width: 350px;
-    margin: 0 auto;
-  }
-  #gameArea {
-    background: rgba(255,255,255,0.85);
-    border-radius: 16px;
-    padding: 20px;
-    color: #222;
-  }
-  #resultScreen {
-    max-width: 350px;
-    margin: 0 auto;
-  }
+body { font-family:'Roboto',sans-serif; text-align:center; margin:0; padding:20px; min-height:100vh;
+       background: linear-gradient(135deg,#1e3c72,#2a5298); color:#fff; }
+h2 { text-shadow:2px 2px 6px rgba(0,0,0,0.6); }
+button { background-color:#ffcc00; color:#222; border:none; border-radius:12px; padding:14px 24px;
+         font-size:18px; margin:10px auto; cursor:pointer; transition:all 0.2s; display:block;
+         width:100%; max-width:300px; box-sizing:border-box; }
+button:hover { transform:scale(1.05); box-shadow:0 0 15px #ffcc00; }
+#prefImg { width:300px; height:300px; object-fit:contain; border:3px solid #fff; border-radius:12px;
+          box-shadow:0 4px 12px rgba(0,0,0,0.3); margin:20px auto; }
+#hint { width:100%; max-width:300px; min-height:50px; background:#eef; color:#222; border-radius:8px;
+       display:none; margin:10px auto; padding:10px; }
+#result { width:100%; max-width:300px; min-height:40px; margin:10px auto; font-size:18px; }
+input { width:100%; max-width:300px; padding:12px; border-radius:8px; border:none; margin:10px auto;
+        font-size:18px; box-sizing:border-box; }
+.correct { color:#0f0; font-weight:bold; animation:pop 0.3s; }
+.wrong { color:#f00; font-weight:bold; animation:shake 0.3s; }
+#score { margin:10px auto; font-size:16px; white-space: pre-line; }
+@keyframes pop { 0%{transform:scale(0.5);} 100%{transform:scale(1);} }
+@keyframes shake { 0%,100%{transform:translateX(0);} 20%,60%{transform:translateX(-5px);} 40%,80%{transform:translateX(5px);} }
+#modeSelect,#gameArea,#resultScreen { display:flex; flex-direction:column; align-items:center; }
+#gameArea,#modeSelect { max-width:350px; margin:0 auto; }
+#gameArea { background:rgba(255,255,255,0.85); border-radius:16px; padding:20px; color:#222; }
+#resultScreen { max-width:350px; margin:0 auto; color:#fff; }
+
+/* モーダル */
+#rankingModal { display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+                background:rgba(0,0,0,0.7); justify-content:center; align-items:center; z-index:1000; }
+#rankingContent { background:#fff; color:#222; border-radius:12px; padding:20px; width:90%; max-width:350px;
+                  max-height:70%; overflow-y:auto; text-align:center; }
+#rankingContent h3 { text-align:center; margin-top:0; }
+#rankingTable { width:100%; border-collapse:collapse; }
+#rankingTable th, #rankingTable td { border:1px solid #ccc; padding:8px; }
+#rankingTable th { background:#ffcc00; color:#222; }
+#rankingContent button { background:#ffcc00; color:#222; margin:10px auto; display:block; width:80%; }
 </style>
 </head>
 <body>
@@ -141,12 +76,21 @@
   <p id="finalDetails"></p>
   <button onclick="takeScreenshot()">📸 スクリーンショット</button>
   <button onclick="shareOnLINE()">💬 LINEでシェア</button>
-  <button onclick="backToMenu()">モード選択に戻る</button>
+  <button onclick="showRankingModal()">🏆 ランキングを見る</button>
+  <button onclick="backToMenu()">⬅️ モード選択に戻る</button>
+</div>
+
+<div id="rankingModal">
+  <div id="rankingContent">
+    <h3>🏆 ランキング 🏆</h3>
+    <div id="rankingList"></div>
+    <button onclick="closeRankingModal()">閉じる</button>
+  </div>
 </div>
 
 <script>
-// 47都道府県データ（ヒント＝県庁所在地）
-const prefectures = [
+// 47都道府県データ（ヒントは県庁所在地）
+const prefectures=[
 {name:'北海道', img:'hokkaido.png', region:'東北地方', hint:'札幌市'},
 {name:'青森県', img:'aomori.png', region:'東北地方', hint:'青森市'},
 {name:'岩手県', img:'iwate.png', region:'東北地方', hint:'盛岡市'},
@@ -196,105 +140,137 @@ const prefectures = [
 {name:'沖縄県', img:'okinawa.png', region:'九州地方', hint:'那覇市'}
 ];
 
-let remaining = [], currentPref, correctCount=0, wrongCount=0, hintCount=0, totalCount=0;
-let regionCorrect = {};
-const prefImg = document.getElementById('prefImg');
-const guessInput = document.getElementById('guess');
-const resultEl = document.getElementById('result');
-const scoreEl = document.getElementById('score');
-const hintEl = document.getElementById('hint');
+let remaining=[], currentPref, correctCount=0, wrongCount=0, hintCount=0, totalCount=0;
+let regionCorrect={};
+const prefImg=document.getElementById('prefImg');
+const guessInput=document.getElementById('guess');
+const resultEl=document.getElementById('result');
+const scoreEl=document.getElementById('score');
+const hintEl=document.getElementById('hint');
 
+// 共通戻る関数
+function backToMenu(){
+    document.getElementById('modeSelect').style.display='flex';
+    document.getElementById('gameArea').style.display='none';
+    document.getElementById('resultScreen').style.display='none';
+    remaining=[]; currentPref=null; correctCount=0; wrongCount=0; hintCount=0; totalCount=0; regionCorrect={};
+    prefImg.src=''; guessInput.value=''; resultEl.textContent=''; hintEl.style.display='none'; scoreEl.textContent='';
+}
+
+document.getElementById('backBtn').onclick=backToMenu;
+
+// ゲーム開始
 function startMode(mode){
-  if(mode==='all'){
-    remaining = [...prefectures]; }
-  else {
-    remaining = prefectures.filter(p => {
-      if(mode==='tohoku') return p.region==='東北地方';
-      if(mode==='kanto') return p.region==='関東地方';
-      if(mode==='chubu') return p.region==='中部地方';
-      if(mode==='kinki') return p.region==='近畿地方';
-      if(mode==='chugoku') return p.region==='中国地方';
-      if(mode==='shikoku') return p.region==='四国地方';
-      if(mode==='kyushu') return p.region==='九州地方';
+    if(mode==='all'){ remaining=[...prefectures]; }
+    else remaining=prefectures.filter(p=>{
+        if(mode==='tohoku') return p.region==='東北地方';
+        if(mode==='kanto') return p.region==='関東地方';
+        if(mode==='chubu') return p.region==='中部地方';
+        if(mode==='kinki') return p.region==='近畿地方';
+        if(mode==='chugoku') return p.region==='中国地方';
+        if(mode==='shikoku') return p.region==='四国地方';
+        if(mode==='kyushu') return p.region==='九州地方';
     });
-  }
-  correctCount = wrongCount = hintCount = totalCount = 0;
-  regionCorrect = {};
-  document.getElementById('modeSelect').style.display = 'none';
-  document.getElementById('resultScreen').style.display = 'none';
-  document.getElementById('gameArea').style.display = 'flex';
-  nextQuestion();
+    correctCount=wrongCount=hintCount=totalCount=0; regionCorrect={};
+    document.getElementById('modeSelect').style.display='none';
+    document.getElementById('resultScreen').style.display='none';
+    document.getElementById('gameArea').style.display='flex';
+    nextQuestion();
 }
 
+// 次の問題
 function nextQuestion(){
-  if(remaining.length === 0){ endGame(); return; }
-  const idx = Math.floor(Math.random()*remaining.length);
-  currentPref = remaining.splice(idx,1)[0];
-  prefImg.src = currentPref.img;
-  guessInput.value = '';
-  resultEl.textContent = '';
-  hintEl.style.display = 'none';
-  scoreEl.textContent = `正解 ${correctCount} / ${totalCount}`;
+    if(remaining.length===0){ endGame(); return; }
+    const idx=Math.floor(Math.random()*remaining.length);
+    currentPref=remaining.splice(idx,1)[0];
+    prefImg.src=currentPref.img; guessInput.value=''; resultEl.textContent='';
+    hintEl.style.display='none';
+    scoreEl.textContent=`正解 ${correctCount} / ${totalCount}`;
 }
 
-document.getElementById('checkBtn').onclick = () => {
-  totalCount++;
-  if(guessInput.value.trim() === currentPref.name){
-    correctCount++;
-    regionCorrect[currentPref.region] = (regionCorrect[currentPref.region]||0)+1;
-    resultEl.textContent = '正解！🎉'; resultEl.className='correct';
-  } else {
-    wrongCount++;
-    resultEl.textContent = `不正解… 正解は ${currentPref.name}`; resultEl.className='wrong';
-  }
-  scoreEl.textContent = `正解 ${correctCount} / ${totalCount}`;
-  setTimeout(nextQuestion,1000);
-};
+// 答え合わせ
+document.getElementById('checkBtn').onclick=()=>{
+    totalCount++;
+    if(guessInput.value.trim()===currentPref.name){
+        correctCount++; regionCorrect[currentPref.region]=(regionCorrect[currentPref.region]||0)+1;
+        resultEl.textContent='正解！🎉'; resultEl.className='correct';
+    } else{
+        wrongCount++;
+        resultEl.textContent=`不正解… 正解は ${currentPref.name}`; resultEl.className='wrong';
+    }
+    scoreEl.textContent=`正解 ${correctCount} / ${totalCount}`;
+    setTimeout(nextQuestion,1000);
+}
 
-document.getElementById('hintBtn').onclick = () => {
-  hintCount++;
-  hintEl.style.display = 'flex';
-  hintEl.textContent = `県庁所在地：${currentPref.hint}`;
-};
+// ヒント
+document.getElementById('hintBtn').onclick=()=>{
+    hintCount++; hintEl.style.display='flex';
+    hintEl.textContent=`県庁所在地：${currentPref.hint}`;
+}
 
+// ゲーム終了
 function endGame(){
-  document.getElementById('gameArea').style.display = 'none';
-  document.getElementById('resultScreen').style.display = 'flex';
-
-  const date = new Date();
-  document.getElementById('date').textContent = 'プレイ日: '+date.toLocaleString();
-  document.getElementById('finalScore').innerHTML = `最終スコア: <b>${correctCount*60 - wrongCount*60 - hintCount*30}点</b>`;
-
-  let detail = `正解: ${correctCount}問 / 不正解: ${wrongCount}問 / ヒント: ${hintCount}回\n`;
-  for(const region in regionCorrect){
-    detail += `${region}: ${regionCorrect[region]}問\n`;
-  }
-  document.getElementById('finalDetails').innerHTML = detail;
-
-  scoreEl.textContent = '';
+    document.getElementById('gameArea').style.display='none';
+    document.getElementById('resultScreen').style.display='flex';
+    const date=new Date();
+    document.getElementById('date').textContent='プレイ日: '+date.toLocaleString();
+    const finalScore=correctCount*60 - wrongCount*60 - hintCount*30;
+    document.getElementById('finalScore').innerHTML=`最終スコア: <b>${finalScore}点</b>`;
+    let detail=`正解: ${correctCount}問 / 不正解: ${wrongCount}問 / ヒント: ${hintCount}回\n`;
+    for(const region in regionCorrect) detail+=`${region}: ${regionCorrect[region]}問\n`;
+    document.getElementById('finalDetails').innerText=detail;
+    scoreEl.textContent='';
+    saveScore(finalScore);
 }
 
+// スクリーンショット
 function takeScreenshot(){
-  html2canvas(document.getElementById('resultScreen')).then(canvas => {
-    const link = document.createElement('a');
-    link.href = canvas.toDataURL('image/png');
-    link.download = 'score.png';
-    link.click();
-  });
+    html2canvas(document.getElementById('resultScreen')).then(canvas=>{
+        const link=document.createElement('a');
+        link.href=canvas.toDataURL('image/png'); link.download='score.png'; link.click();
+    });
 }
 
+// LINEシェア
 function shareOnLINE(){
-  const scoreText = document.getElementById('finalScore').innerText;
-  const detailsText = document.getElementById('finalDetails').innerText;
-  const dateText = document.getElementById('date').innerText;
-  const gameUrl = 'https://akkyommm-crypto.github.io/todofuken-game/';
-
-  const message = `【都道府県形当てゲーム】\n${scoreText}\n${detailsText}\n${dateText}\n\nここから遊べるよ👇\n${gameUrl}`;
-  window.open('https://line.me/R/msg/text/?' + encodeURIComponent(message), '_blank');
+    const scoreText=document.getElementById('finalScore').innerText;
+    const detailsText=document.getElementById('finalDetails').innerText;
+    const dateText=document.getElementById('date').innerText;
+    const gameUrl='https://akkyommm-crypto.github.io/todofuken-game/';
+    const message=`【都道府県形当てゲーム】\n${scoreText}\n${detailsText}\n${dateText}\n\nここから遊べるよ👇\n${gameUrl}`;
+    window.open('https://line.me/R/msg/text/?'+encodeURIComponent(message),'_blank');
 }
 
-document.getElementById('backBtn').onclick = () => { document.getElementById('modeSelect').style.display='flex'; document.getElementById('resultScreen').style.display='none'; };
+// ランキング管理
+function saveScore(score){
+    let scores=JSON.parse(localStorage.getItem('ranking')||'[]');
+    scores.push({score:score,date:new Date().toLocaleString()});
+    scores.sort((a,b)=>b.score-a.score);
+    if(scores.length>10) scores=scores.slice(0,10);
+    localStorage.setItem('ranking',JSON.stringify(scores));
+}
 
+// モーダル表示（表形式）
+function showRankingModal(){
+    const scores=JSON.parse(localStorage.getItem('ranking')||'[]');
+    const list=document.getElementById('rankingList');
+    if(scores.length===0){
+        list.innerHTML='<p>ランキングはまだありません</p>';
+    } else {
+        let html='<table id="rankingTable"><tr><th>順位</th><th>スコア</th><th>日付</th></tr>';
+        scores.forEach((s,i)=>{
+            html+=`<tr><td>${i+1}</td><td>${s.score}点</td><td>${s.date}</td></tr>`;
+        });
+        html+='</table>';
+        list.innerHTML=html;
+    }
+    document.getElementById('rankingModal').style.display='flex';
+}
+
+function closeRankingModal(){
+    document.getElementById('rankingModal').style.display='none';
+}
 </script>
+
 </body>
 </html>
