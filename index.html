@@ -1,47 +1,102 @@
-
 <!doctype html>
 <html lang="ja">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>都道府県形当てゲーム 完全版</title>
+<title>都道府県形当てゲーム</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <style>
-body { font-family:'Roboto',sans-serif; text-align:center; margin:0; padding:20px; min-height:100vh;
-       background: linear-gradient(135deg,#1e3c72,#2a5298); color:#fff; }
-h2 { text-shadow:2px 2px 6px rgba(0,0,0,0.6); }
-button { background-color:#ffcc00; color:#222; border:none; border-radius:12px; padding:14px 24px;
-         font-size:18px; margin:10px auto; cursor:pointer; transition:all 0.2s; display:block;
-         width:100%; max-width:300px; box-sizing:border-box; }
-button:hover { transform:scale(1.05); box-shadow:0 0 15px #ffcc00; }
-#prefImg { width:300px; height:300px; object-fit:contain; border:3px solid #fff; border-radius:12px;
-          box-shadow:0 4px 12px rgba(0,0,0,0.3); margin:20px auto; }
-#hint { width:100%; max-width:300px; min-height:50px; background:#eef; color:#222; border-radius:8px;
-       display:none; margin:10px auto; padding:10px; }
-#result { width:100%; max-width:300px; min-height:40px; margin:10px auto; font-size:18px; }
-input { width:100%; max-width:300px; padding:12px; border-radius:8px; border:none; margin:10px auto;
-        font-size:18px; box-sizing:border-box; }
-.correct { color:#0f0; font-weight:bold; animation:pop 0.3s; }
-.wrong { color:#f00; font-weight:bold; animation:shake 0.3s; }
-#score { margin:10px auto; font-size:16px; white-space: pre-line; }
+body {
+  font-family:'Roboto',sans-serif;
+  text-align:center;
+  margin:0;
+  padding:20px;
+  min-height:100vh;
+  background: linear-gradient(135deg,#56ccf2,#2f80ed);
+  color:#fff;
+}
+h2 {
+  text-shadow:2px 2px 6px rgba(0,0,0,0.3);
+}
+button {
+  background-color:#ffe066;
+  color:#222;
+  border:none;
+  border-radius:12px;
+  padding:14px 24px;
+  font-size:18px;
+  margin:10px auto;
+  cursor:pointer;
+  transition:all 0.2s;
+  display:block;
+  width:100%;
+  max-width:300px;
+  box-sizing:border-box;
+}
+button:hover {
+  transform:scale(1.05);
+  box-shadow:0 0 15px #ffe066;
+}
+#prefImg {
+  width:300px;
+  height:300px;
+  object-fit:contain;
+  border:3px solid #fff;
+  border-radius:12px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.2);
+  margin:20px auto;
+}
+#hint {
+  width:100%;
+  max-width:300px;
+  min-height:50px;
+  background:#fff;
+  color:#222;
+  border-radius:8px;
+  display:none;
+  margin:10px auto;
+  padding:10px;
+  font-weight:bold;
+}
+#result {
+  width:100%;
+  max-width:300px;
+  min-height:40px;
+  margin:10px auto;
+  font-size:18px;
+  font-weight:bold;
+}
+input {
+  width:100%;
+  max-width:300px;
+  padding:12px;
+  border-radius:8px;
+  border:none;
+  margin:10px auto;
+  font-size:18px;
+  box-sizing:border-box;
+}
+.correct { color:#0f0; animation:pop 0.3s; }
+.wrong { color:#ff3b3b; animation:shake 0.3s; }
+#score { margin:10px auto; font-size:16px; white-space: pre-line; font-weight:bold; }
+
 @keyframes pop { 0%{transform:scale(0.5);} 100%{transform:scale(1);} }
 @keyframes shake { 0%,100%{transform:translateX(0);} 20%,60%{transform:translateX(-5px);} 40%,80%{transform:translateX(5px);} }
-#modeSelect,#gameArea,#resultScreen { display:flex; flex-direction:column; align-items:center; }
-#gameArea,#modeSelect { max-width:350px; margin:0 auto; }
-#gameArea { background:rgba(255,255,255,0.85); border-radius:16px; padding:20px; color:#222; }
-#resultScreen { max-width:350px; margin:0 auto; color:#fff; }
 
-/* モーダル */
-#rankingModal { display:none; position:fixed; top:0; left:0; width:100%; height:100%;
-                background:rgba(0,0,0,0.7); justify-content:center; align-items:center; z-index:1000; }
-#rankingContent { background:#fff; color:#222; border-radius:12px; padding:20px; width:90%; max-width:350px;
-                  max-height:70%; overflow-y:auto; text-align:center; }
-#rankingContent h3 { text-align:center; margin-top:0; }
-#rankingTable { width:100%; border-collapse:collapse; }
-#rankingTable th, #rankingTable td { border:1px solid #ccc; padding:8px; }
-#rankingTable th { background:#ffcc00; color:#222; }
-#rankingContent button { background:#ffcc00; color:#222; margin:10px auto; display:block; width:80%; }
+#modeSelect,#gameArea,#resultScreen {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+#gameArea,#modeSelect { max-width:350px; margin:0 auto; }
+#gameArea {
+  background:rgba(255,255,255,0.85);
+  border-radius:16px;
+  padding:20px;
+  color:#222;
+}
+#resultScreen { max-width:350px; margin:0 auto; color:#fff; }
 </style>
 </head>
 <body>
@@ -76,20 +131,11 @@ input { width:100%; max-width:300px; padding:12px; border-radius:8px; border:non
   <p id="finalDetails"></p>
   <button onclick="takeScreenshot()">📸 スクリーンショット</button>
   <button onclick="shareOnLINE()">💬 LINEでシェア</button>
-  <button onclick="showRankingModal()">🏆 ランキングを見る</button>
   <button onclick="backToMenu()">⬅️ モード選択に戻る</button>
 </div>
 
-<div id="rankingModal">
-  <div id="rankingContent">
-    <h3>🏆 ランキング 🏆</h3>
-    <div id="rankingList"></div>
-    <button onclick="closeRankingModal()">閉じる</button>
-  </div>
-</div>
-
 <script>
-// 47都道府県データ（ヒントは県庁所在地）
+// 47都道府県データ（ヒント＝県庁所在地）
 const prefectures=[
 {name:'北海道', img:'hokkaido.png', region:'東北地方', hint:'札幌市'},
 {name:'青森県', img:'aomori.png', region:'東北地方', hint:'青森市'},
@@ -138,6 +184,7 @@ const prefectures=[
 {name:'宮崎県', img:'miyazaki.png', region:'九州地方', hint:'宮崎市'},
 {name:'鹿児島県', img:'kagoshima.png', region:'九州地方', hint:'鹿児島市'},
 {name:'沖縄県', img:'okinawa.png', region:'九州地方', hint:'那覇市'}
+
 ];
 
 let remaining=[], currentPref, correctCount=0, wrongCount=0, hintCount=0, totalCount=0;
@@ -219,8 +266,6 @@ function endGame(){
     let detail=`正解: ${correctCount}問 / 不正解: ${wrongCount}問 / ヒント: ${hintCount}回\n`;
     for(const region in regionCorrect) detail+=`${region}: ${regionCorrect[region]}問\n`;
     document.getElementById('finalDetails').innerText=detail;
-    scoreEl.textContent='';
-    saveScore(finalScore);
 }
 
 // スクリーンショット
@@ -240,37 +285,6 @@ function shareOnLINE(){
     const message=`【都道府県形当てゲーム】\n${scoreText}\n${detailsText}\n${dateText}\n\nここから遊べるよ👇\n${gameUrl}`;
     window.open('https://line.me/R/msg/text/?'+encodeURIComponent(message),'_blank');
 }
-
-// ランキング管理
-function saveScore(score){
-    let scores=JSON.parse(localStorage.getItem('ranking')||'[]');
-    scores.push({score:score,date:new Date().toLocaleString()});
-    scores.sort((a,b)=>b.score-a.score);
-    if(scores.length>10) scores=scores.slice(0,10);
-    localStorage.setItem('ranking',JSON.stringify(scores));
-}
-
-// モーダル表示（表形式）
-function showRankingModal(){
-    const scores=JSON.parse(localStorage.getItem('ranking')||'[]');
-    const list=document.getElementById('rankingList');
-    if(scores.length===0){
-        list.innerHTML='<p>ランキングはまだありません</p>';
-    } else {
-        let html='<table id="rankingTable"><tr><th>順位</th><th>スコア</th><th>日付</th></tr>';
-        scores.forEach((s,i)=>{
-            html+=`<tr><td>${i+1}</td><td>${s.score}点</td><td>${s.date}</td></tr>`;
-        });
-        html+='</table>';
-        list.innerHTML=html;
-    }
-    document.getElementById('rankingModal').style.display='flex';
-}
-
-function closeRankingModal(){
-    document.getElementById('rankingModal').style.display='none';
-}
 </script>
-
 </body>
 </html>
