@@ -1,86 +1,105 @@
 <!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>都道府県当てゲーム</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-  <style>
-    body { font-family: sans-serif; margin:0; padding:0; display:flex; flex-direction:column; align-items:center; }
-    #map { width:100%; height:300px; margin:10px 0; }
-    .choices { display:grid; grid-template-columns:1fr 1fr; gap:8px; width:90%; max-width:400px; }
-    .choices button { padding:12px; border-radius:8px; border:1px solid #ccc; font-size:16px; }
-    .correct { background:#c8facc; border-color:#38a169; }
-    .wrong { background:#fbb; border-color:#e53e3e; }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>都道府県当てゲーム（入力版）</title>
+<style>
+body{font-family:sans-serif;display:flex;flex-direction:column;align-items:center;margin:0;padding:0;}
+#map{width:100%;height:300px;margin:10px 0;background:#eef;}
+input,button{font-size:16px;padding:10px;margin:5px;border-radius:6px;border:1px solid #ccc;}
+.correct{color:#0a0;font-weight:bold;}
+.wrong{color:#c00;font-weight:bold;}
+</style>
 </head>
 <body>
-  <h2>都道府県の形を当てよう！</h2>
-  <div id="map"></div>
-  <div class="choices" id="choices"></div>
-  <p id="result"></p>
-  <button id="nextBtn">次へ</button>
+<h2>都道府県の形を当てよう！</h2>
+<div id="map"></div>
+<input type="text" id="guess" placeholder="都道府県名を入力">
+<button id="checkBtn">答え合わせ</button>
+<p id="result"></p>
+<button id="nextBtn">次へ</button>
 
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script>
-    const map = L.map('map').setView([37.5,137], 5);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      { attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
+<script>
+const prefectures = [
+  {name:'北海道', lat:43.06417,lng:141.34694},
+  {name:'青森県', lat:40.82444,lng:140.74},
+  {name:'岩手県', lat:39.70361,lng:141.1525},
+  {name:'宮城県', lat:38.26889,lng:140.87194},
+  {name:'秋田県', lat:39.71861,lng:140.1025},
+  {name:'山形県', lat:38.24056,lng:140.36333},
+  {name:'福島県', lat:37.75,lng:140.46778},
+  {name:'茨城県', lat:36.34139,lng:140.44667},
+  {name:'栃木県', lat:36.56583,lng:139.88361},
+  {name:'群馬県', lat:36.39111,lng:139.06083},
+  {name:'埼玉県', lat:35.85694,lng:139.64889},
+  {name:'千葉県', lat:35.60472,lng:140.12333},
+  {name:'東京都', lat:35.68944,lng:139.69167},
+  {name:'神奈川県', lat:35.44778,lng:139.6425},
+  {name:'新潟県', lat:37.90222,lng:139.02361},
+  {name:'富山県', lat:36.69528,lng:137.21139},
+  {name:'石川県', lat:36.59444,lng:136.62556},
+  {name:'福井県', lat:36.06528,lng:136.22194},
+  {name:'山梨県', lat:35.66389,lng:138.56833},
+  {name:'長野県', lat:36.65139,lng:138.18111},
+  {name:'岐阜県', lat:35.39111,lng:136.72222},
+  {name:'静岡県', lat:34.97694,lng:138.38306},
+  {name:'愛知県', lat:35.18028,lng:136.90667},
+  {name:'三重県', lat:34.73028,lng:136.50861},
+  {name:'滋賀県', lat:35.00444,lng:135.86833},
+  {name:'京都府', lat:35.02139,lng:135.75556},
+  {name:'大阪府', lat:34.68639,lng:135.52},
+  {name:'兵庫県', lat:34.69139,lng:135.18306},
+  {name:'奈良県', lat:34.68528,lng:135.83278},
+  {name:'和歌山県', lat:34.22611,lng:135.1675},
+  {name:'鳥取県', lat:35.50361,lng:134.23833},
+  {name:'島根県', lat:35.47222,lng:133.05056},
+  {name:'岡山県', lat:34.66167,lng:133.935},
+  {name:'広島県', lat:34.39639,lng:132.45944},
+  {name:'山口県', lat:34.18583,lng:131.47139},
+  {name:'徳島県', lat:34.06583,lng:134.55944},
+  {name:'香川県', lat:34.34028,lng:134.04333},
+  {name:'愛媛県', lat:33.84167,lng:132.76611},
+  {name:'高知県', lat:33.55972,lng:133.53111},
+  {name:'福岡県', lat:33.60639,lng:130.41806},
+  {name:'佐賀県', lat:33.24944,lng:130.29889},
+  {name:'長崎県', lat:32.74472,lng:129.87361},
+  {name:'熊本県', lat:32.78972,lng:130.74167},
+  {name:'大分県', lat:33.23806,lng:131.6125},
+  {name:'宮崎県', lat:31.91111,lng:131.42389},
+  {name:'鹿児島県', lat:31.56028,lng:130.55778},
+  {name:'沖縄県', lat:26.2125,lng:127.68111}
+];
 
-    let geojsonData;
-    let currentPref;
-    let layer;
-    const choicesEl = document.getElementById('choices');
-    const resultEl = document.getElementById('result');
-    const nextBtn = document.getElementById('nextBtn');
+let currentPref;
+const mapEl = document.getElementById('map');
+const guessInput = document.getElementById('guess');
+const checkBtn = document.getElementById('checkBtn');
+const nextBtn = document.getElementById('nextBtn');
+const resultEl = document.getElementById('result');
 
-    async function loadData(){
-      const res = await fetch('https://raw.githubusercontent.com/geolonia/japan-geojson/master/municipality/japan.geojson');
-      geojsonData = await res.json();
-      startQuestion();
-    }
+function newQuestion(){
+  currentPref = prefectures[Math.floor(Math.random()*prefectures.length)];
+  mapEl.textContent = `（ヒント：緯度 ${currentPref.lat.toFixed(2)}、経度 ${currentPref.lng.toFixed(2)} の位置を想像してね）`;
+  guessInput.value="";
+  resultEl.textContent="";
+}
 
-    function startQuestion(){
-      const features = geojsonData.features.filter(f=>f.properties.N03_001);
-      currentPref = features[Math.floor(Math.random()*features.length)];
+checkBtn.onclick = ()=>{
+  const answer = guessInput.value.trim();
+  if(answer===currentPref.name){
+    resultEl.textContent="正解！🎉";
+    resultEl.className="correct";
+  }else{
+    resultEl.textContent=`不正解… 正解は ${currentPref.name}`;
+    resultEl.className="wrong";
+  }
+}
 
-      if(layer) map.removeLayer(layer);
-      layer = L.geoJSON(currentPref, {style:{color:"#333",fillColor:"#3b82f6",fillOpacity:0.6}}).addTo(map);
-      map.fitBounds(layer.getBounds());
+nextBtn.onclick = newQuestion;
 
-      const allPrefs = [...new Set(features.map(f=>f.properties.N03_001))];
-      const correct = currentPref.properties.N03_001;
-      const choices = new Set([correct]);
-      while(choices.size<4){
-        choices.add(allPrefs[Math.floor(Math.random()*allPrefs.length)]);
-      }
-      const choiceArr = [...choices].sort(()=>Math.random()-0.5);
-
-      choicesEl.innerHTML="";
-      choiceArr.forEach(pref=>{
-        const btn=document.createElement("button");
-        btn.textContent=pref;
-        btn.onclick=()=>checkAnswer(pref,correct,btn);
-        choicesEl.appendChild(btn);
-      });
-      resultEl.textContent="";
-    }
-
-    function checkAnswer(pref,correct,btn){
-      const buttons = choicesEl.querySelectorAll("button");
-      buttons.forEach(b=>b.disabled=true);
-      if(pref===correct){
-        btn.classList.add("correct");
-        resultEl.textContent="正解！";
-      }else{
-        btn.classList.add("wrong");
-        resultEl.textContent=`不正解！ 正解は ${correct}`;
-        buttons.forEach(b=>{ if(b.textContent===correct) b.classList.add("correct"); });
-      }
-    }
-
-    nextBtn.onclick=startQuestion;
-    loadData();
-  </script>
+newQuestion();
+</script>
 </body>
 </html>
+
