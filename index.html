@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>都道府県当てゲーム（入力版）</title>
+<title>都道府県当てゲーム（自動切替版）</title>
 <style>
 body{font-family:sans-serif;display:flex;flex-direction:column;align-items:center;margin:0;padding:0;}
 #hint{width:90%;max-width:400px;height:80px;margin:10px 0;background:#eef;display:flex;align-items:center;justify-content:center;font-size:18px;border-radius:8px;}
@@ -20,7 +20,6 @@ input,button{font-size:18px;padding:12px;margin:5px;border-radius:6px;border:1px
 <button id="checkBtn">答え合わせ</button>
 <p id="result"></p>
 <p id="score"></p>
-<button id="nextBtn">次へ</button>
 
 <script>
 const prefectures = [
@@ -78,7 +77,6 @@ let currentPref, correctCount=0, totalCount=0;
 const hintEl=document.getElementById('hint');
 const guessInput=document.getElementById('guess');
 const checkBtn=document.getElementById('checkBtn');
-const nextBtn=document.getElementById('nextBtn');
 const resultEl=document.getElementById('result');
 const scoreEl=document.getElementById('score');
 
@@ -100,12 +98,4 @@ checkBtn.onclick=()=>{
     resultEl.textContent=`不正解… 正解は ${currentPref.name}`;
     resultEl.className='wrong';
   }
-  scoreEl.textContent=`正解 ${correctCount} / ${totalCount} 問`;
-}
-
-nextBtn.onclick=newQuestion;
-
-newQuestion();
-</script>
-</body>
-</html>
+  scoreEl.textContent=`正解 ${cor
