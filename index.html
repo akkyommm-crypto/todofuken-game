@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>都道府県当てゲーム（自動切替版）</title>
 <style>
-body{font-family:sans-serif;display:flex;flex-direction:column;align-items:center;margin:0;padding:0;}
+body{font-family:sans-serif;display:flex;flex-direction:column;align-items:center;margin:0;padding:10px;}
 #hint{width:90%;max-width:400px;height:80px;margin:10px 0;background:#eef;display:flex;align-items:center;justify-content:center;font-size:18px;border-radius:8px;}
 input,button{font-size:18px;padding:12px;margin:5px;border-radius:6px;border:1px solid #ccc;width:90%;max-width:400px;}
 .correct{color:#0a0;font-weight:bold;}
@@ -15,13 +15,17 @@ input,button{font-size:18px;padding:12px;margin:5px;border-radius:6px;border:1px
 </head>
 <body>
 <h2>都道府県の名前を当てよう！</h2>
+
 <div id="hint"></div>
+
 <input type="text" id="guess" placeholder="都道府県名を入力">
 <button id="checkBtn">答え合わせ</button>
+
 <p id="result"></p>
 <p id="score"></p>
 
 <script>
+// 都道府県データ
 const prefectures = [
   {name:'北海道', lat:43.06417,lng:141.34694},
   {name:'青森県', lat:40.82444,lng:140.74},
@@ -74,28 +78,37 @@ const prefectures = [
 
 let currentPref, correctCount=0, totalCount=0;
 
-const hintEl=document.getElementById('hint');
-const guessInput=document.getElementById('guess');
-const checkBtn=document.getElementById('checkBtn');
-const resultEl=document.getElementById('result');
-const scoreEl=document.getElementById('score');
+const hintEl = document.getElementById('hint');
+const guessInput = document.getElementById('guess');
+const checkBtn = document.getElementById('checkBtn');
+const resultEl = document.getElementById('result');
+const scoreEl = document.getElementById('score');
 
-function newQuestion(){
-  currentPref = prefectures[Math.floor(Math.random()*prefectures.length)];
-  hintEl.textContent=`ヒント：緯度 ${currentPref.lat.toFixed(2)}、経度 ${currentPref.lng.toFixed(2)}`;
-  guessInput.value='';
-  resultEl.textContent='';
+function newQuestion() {
+  currentPref = prefectures[Math.floor(Math.random() * prefectures.length)];
+  hintEl.textContent = `ヒント：緯度 ${currentPref.lat.toFixed(2)}、経度 ${currentPref.lng.toFixed(2)}`;
+  guessInput.value = '';
+  resultEl.textContent = '';
 }
 
-checkBtn.onclick=()=>{
-  const answer=guessInput.value.trim();
+checkBtn.onclick = () => {
+  const answer = guessInput.value.trim();
   totalCount++;
-  if(answer===currentPref.name){
-    resultEl.textContent='正解！🎉';
-    resultEl.className='correct';
+  if (answer === currentPref.name) {
+    resultEl.textContent = '正解！🎉';
+    resultEl.className = 'correct';
     correctCount++;
-  }else{
-    resultEl.textContent=`不正解… 正解は ${currentPref.name}`;
-    resultEl.className='wrong';
+  } else {
+    resultEl.textContent = `不正解… 正解は ${currentPref.name}`;
+    resultEl.className = 'wrong';
   }
-  scoreEl.textContent=`正解 ${cor
+  scoreEl.textContent = `正解 ${correctCount} / ${totalCount} 問`;
+
+  // 自動で次の問題に切り替え（1秒後）
+  setTimeout(newQuestion, 1000);
+}
+
+newQuestion();
+</script>
+</body>
+</html>
