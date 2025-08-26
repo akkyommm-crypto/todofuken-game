@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>都道府県形当てゲーム（かっこいい版）</title>
+<title>都道府県形当てゲーム（ボタン固定版）</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500;700&display=swap" rel="stylesheet">
 <style>
 body{
@@ -51,7 +51,7 @@ button:hover{
 #hint{
   width:90%;
   max-width:400px;
-  min-height:50px;
+  min-height:50px; /* 高さ固定 */
   margin:5px 0;
   background:#eef;
   display:flex;
@@ -60,6 +60,14 @@ button:hover{
   font-size:16px;
   border-radius:8px;
   display:none;
+}
+
+#result{
+  width:90%;
+  max-width:400px;
+  min-height:40px; /* 高さ固定 */
+  text-align:center;
+  font-size:18px;
 }
 
 input{
@@ -92,6 +100,13 @@ input{
   box-shadow:0 8px 20px rgba(0,0,0,0.2);
 }
 
+.buttons{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:5px;
+}
+
 @keyframes pop{
   0%{transform: scale(0.5);}
   100%{transform: scale(1);}
@@ -119,18 +134,19 @@ input{
 
 <div id="gameArea" style="display:none;">
   <img id="prefImg" src="" alt="都道府県の形">
-  <p id="result"></p>
-  <p id="score"></p>
   <div id="hint"></div>
   <input type="text" id="guess" placeholder="都道府県名を入力">
-  <button id="checkBtn">答え合わせ</button>
-  <button id="hintBtn">ヒントを見る</button>
-  <button id="backBtn">モード選択に戻る</button>
-
+  <div class="buttons">
+    <button id="checkBtn">答え合わせ</button>
+    <button id="hintBtn">ヒントを見る</button>
+    <button id="backBtn">モード選択に戻る</button>
+  </div>
+  <div id="result"></div>
+  <p id="score"></p>
 </div>
 
 <script>
-// 都道府県データ（必要に応じて全都道府県追加）
+// 都道府県データ（例）
 const prefectures = [
   {name:'北海道', img:'hokkaido.png', region:'東北地方', hint:'札幌市が県庁所在地'},
   {name:'青森県', img:'aomori.png', region:'東北地方', hint:'りんごが有名'},
@@ -139,7 +155,6 @@ const prefectures = [
   {name:'秋田県', img:'akita.png', region:'東北地方', hint:'秋田犬'},
   {name:'山形県', img:'yamagata.png', region:'東北地方', hint:'さくらんぼ'},
   {name:'福島県', img:'fukushima.png', region:'東北地方', hint:'桃の生産量が多い'}
-  // 他の都道府県も追加可能
 ];
 
 let remainingPrefectures = [];
@@ -181,8 +196,7 @@ function startMode(mode){
     selectedPrefectures = [...prefectures];
   } else if(mode==='tohoku'){
     selectedPrefectures = prefectures.filter(p=>p.region==='東北地方');
-  } 
-  // 他の地方も同様に追加可能
+  }
 
   remainingPrefectures = [...selectedPrefectures];
   correctCount=0;
