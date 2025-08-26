@@ -3,113 +3,110 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>都道府県形当てゲーム（完全版）</title>
+<title>都道府県形当てゲーム（完成版）</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <style>
-body{
-  font-family: 'Roboto', sans-serif;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  margin:0;
-  padding:10px;
-  min-height:100vh;
-  background: linear-gradient(to bottom, #89f7fe, #66a6ff);
-}
-button{
-  font-size:18px;
-  padding:14px;
-  margin:5px;
-  border:none;
-  border-radius:12px;
-  width:90%;
-  max-width:400px;
-  cursor:pointer;
-  transition: all 0.2s;
-}
-button:hover{
-  transform: scale(1.05);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-}
-#checkBtn, #hintBtn, #backBtn {
-  display: block;             /* 縦並び */
-  width: 100%;                /* 横幅いっぱい */
-  max-width: 400px;           /* 最大幅を400pxに固定 */
-  margin: 10px auto;          /* 左右マージン自動 → 中央寄せ */
-  font-size: 20px;            /* 文字サイズ */
-  padding: 14px;              /* 高さ調整 */
-  box-sizing: border-box;     /* サイズ計算を安定させる */
-}
-#checkBtn{background:#4CAF50;color:white;}
-#hintBtn{background:#2196F3;color:white;}
-#backBtn{background:#f44336;color:white;}
-#prefImg{
-  width:300px;
-  height:300px;
-  object-fit: contain;
-  margin:10px 0;
-  border-radius:16px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-}
-#hint{
-  width:90%;
-  max-width:400px;
-  min-height:50px;
-  margin:5px 0;
-  background:#eef;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:16px;
-  border-radius:8px;
-  display:none;
-}
-#result{
-  width:90%;
-  max-width:400px;
-  min-height:40px;
-  text-align:center;
-  font-size:18px;
-}
-input{
-  font-size:18px;
-  padding:12px;
-  margin:5px 0;
-  border-radius:8px;
-  width:90%;
-  max-width:400px;
-  border:1px solid #ccc;
-}
-.correct{color:#0a0;font-weight:bold; animation: pop 0.3s;}
-.wrong{color:#c00;font-weight:bold; animation: shake 0.3s;}
-#score{margin:5px;font-size:16px;white-space:pre-line;}
-#modeSelect, #gameArea{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  width:100%;
-  max-width:400px;
-}
-#gameArea{
-  background: rgba(255,255,255,0.9);
-  padding:20px;
-  border-radius:16px;
-  box-shadow:0 8px 20px rgba(0,0,0,0.2);
-}
-.buttons{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:5px;
-}
-@keyframes pop{
-  0%{transform: scale(0.5);}
-  100%{transform: scale(1);}
-}
-@keyframes shake{
-  0%,100%{transform: translateX(0);}
-  20%,60%{transform: translateX(-5px);}
-  40%,80%{transform: translateX(5px);}
-}
+  body {
+    font-family: 'Roboto', sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1d2671, #c33764);
+    color: #fff;
+  }
+  h2 {
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
+  }
+  button {
+    background-color: #ffcc00;
+    color: #222;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 24px;
+    font-size: 18px;
+    margin: 10px auto;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    box-sizing: border-box;
+  }
+  button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px #ffcc00;
+  }
+  #prefImg {
+    width:300px;
+    height:300px;
+    object-fit:contain;
+    border: 3px solid #fff;
+    border-radius:12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    margin: 20px auto;
+  }
+  #hint {
+    width:100%; max-width:300px;
+    min-height:50px;
+    background:#eef;
+    color:#222;
+    border-radius:8px;
+    display:none;
+    margin:10px auto;
+    padding:10px;
+  }
+  #result {
+    width:100%; max-width:300px;
+    min-height:40px;
+    margin: 10px auto;
+    font-size: 18px;
+  }
+  input {
+    width:100%; max-width:300px;
+    padding:12px;
+    border-radius:8px;
+    border:none;
+    margin:10px auto;
+    font-size:18px;
+    box-sizing:border-box;
+  }
+  .correct { color: #0f0; font-weight: bold; animation: pop 0.3s; }
+  .wrong { color: #f00; font-weight: bold; animation: shake 0.3s; }
+  #score {
+    margin: 10px auto;
+    font-size: 16px;
+    white-space: pre-line;
+  }
+  @keyframes pop {
+    0% { transform: scale(0.5); }
+    100% { transform: scale(1); }
+  }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20%,60% { transform: translateX(-5px); }
+    40%,80% { transform: translateX(5px); }
+  }
+  #modeSelect, #gameArea, #resultScreen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  #gameArea, #modeSelect {
+    max-width: 350px;
+    margin: 0 auto;
+  }
+  #gameArea {
+    background: rgba(255,255,255,0.85);
+    border-radius: 16px;
+    padding: 20px;
+    color: #222;
+  }
+  #resultScreen {
+    max-width: 350px;
+    margin: 0 auto;
+  }
 </style>
 </head>
 <body>
@@ -130,17 +127,25 @@ input{
   <img id="prefImg" src="" alt="都道府県の形">
   <div id="result"></div>
   <input type="text" id="guess" placeholder="都道府県名を入力">
-  <div class="buttons">
-    <button id="checkBtn">答え合わせ</button>
-    <button id="hintBtn">ヒントを見る</button>
-  </div>
+  <button id="checkBtn">答え合わせ</button>
+  <button id="hintBtn">ヒントを見る</button>
   <div id="hint"></div>
   <button id="backBtn">モード選択に戻る</button>
   <p id="score"></p>
 </div>
 
+<div id="resultScreen" style="display:none;">
+  <h2>お疲れ様でした！🎉</h2>
+  <p id="date"></p>
+  <p id="finalScore"></p>
+  <p id="finalDetails"></p>
+  <button onclick="takeScreenshot()">📸 スクリーンショット</button>
+  <button onclick="shareOnLINE()">💬 LINEでシェア</button>
+  <button onclick="backToMenu()">モード選択に戻る</button>
+</div>
+
 <script>
-// 全47都道府県データ（ヒントは県庁所在地）
+// 47都道府県データ（ヒント＝県庁所在地）
 const prefectures = [
 {name:'北海道', img:'hokkaido.png', region:'東北地方', hint:'札幌市'},
 {name:'青森県', img:'aomori.png', region:'東北地方', hint:'青森市'},
@@ -191,47 +196,19 @@ const prefectures = [
 {name:'沖縄県', img:'okinawa.png', region:'九州地方', hint:'那覇市'}
 ];
 
-let remainingPrefectures = [];
-let currentPref, correctCount=0, totalCount=0;
-const regionScore = {};
-const prefImg=document.getElementById('prefImg');
-const guessInput=document.getElementById('guess');
-const checkBtn=document.getElementById('checkBtn');
-const backBtn=document.getElementById('backBtn');
-const resultEl=document.getElementById('result');
-const scoreEl=document.getElementById('score');
-const hintEl=document.getElementById('hint');
-const hintBtn=document.getElementById('hintBtn');
-
-hintBtn.onclick = () => {
-  if(currentPref){
-    hintEl.style.display='flex';
-    hintEl.textContent = `ヒント（県庁所在地）：${currentPref.hint}`;
-  }
-};
-
-backBtn.onclick = () => {
-  document.getElementById('gameArea').style.display='none';
-  document.getElementById('modeSelect').style.display='flex';
-  remainingPrefectures = [];
-  currentPref = null;
-  correctCount = 0;
-  totalCount = 0;
-  for(const key in regionScore) delete regionScore[key];
-
-  resultEl.textContent = '';
-  scoreEl.textContent = '';
-  hintEl.style.display='none';
-  prefImg.src = '';
-  guessInput.value = '';
-};
+let remaining = [], currentPref, correctCount=0, wrongCount=0, hintCount=0, totalCount=0;
+let regionCorrect = {};
+const prefImg = document.getElementById('prefImg');
+const guessInput = document.getElementById('guess');
+const resultEl = document.getElementById('result');
+const scoreEl = document.getElementById('score');
+const hintEl = document.getElementById('hint');
 
 function startMode(mode){
-  let selectedPrefectures;
   if(mode==='all'){
-    selectedPrefectures = [...prefectures];
-  } else {
-    selectedPrefectures = prefectures.filter(p=>{
+    remaining = [...prefectures]; }
+  else {
+    remaining = prefectures.filter(p => {
       if(mode==='tohoku') return p.region==='東北地方';
       if(mode==='kanto') return p.region==='関東地方';
       if(mode==='chubu') return p.region==='中部地方';
@@ -241,52 +218,83 @@ function startMode(mode){
       if(mode==='kyushu') return p.region==='九州地方';
     });
   }
-
-  remainingPrefectures = [...selectedPrefectures];
-  correctCount=0;
-  totalCount=0;
-  for(const key in regionScore) delete regionScore[key];
-
-  document.getElementById('modeSelect').style.display='none';
-  document.getElementById('gameArea').style.display='flex';
-  newQuestion();
+  correctCount = wrongCount = hintCount = totalCount = 0;
+  regionCorrect = {};
+  document.getElementById('modeSelect').style.display = 'none';
+  document.getElementById('resultScreen').style.display = 'none';
+  document.getElementById('gameArea').style.display = 'flex';
+  nextQuestion();
 }
 
-function newQuestion(){
-  if(remainingPrefectures.length === 0){
-    let regionText = '';
-    for(const region in regionScore){
-      regionText += `${region} ${regionScore[region]}問正解\n`;
-    }
-    resultEl.textContent = `全問終了！正解 ${correctCount}/${totalCount} 問\n` + regionText;
-    prefImg.src = 'otsukaresama.png';
-    hintEl.style.display='none';
-    return;
-  }
-  const index = Math.floor(Math.random()*remainingPrefectures.length);
-  currentPref = remainingPrefectures[index];
+function nextQuestion(){
+  if(remaining.length === 0){ endGame(); return; }
+  const idx = Math.floor(Math.random()*remaining.length);
+  currentPref = remaining.splice(idx,1)[0];
   prefImg.src = currentPref.img;
   guessInput.value = '';
   resultEl.textContent = '';
-  hintEl.style.display='none';
-  remainingPrefectures.splice(index,1);
+  hintEl.style.display = 'none';
+  scoreEl.textContent = `正解 ${correctCount} / ${totalCount}`;
 }
 
-checkBtn.onclick=()=>{
-  const answer=guessInput.value.trim();
+document.getElementById('checkBtn').onclick = () => {
   totalCount++;
-  if(answer===currentPref.name){
-    resultEl.textContent='正解！🎉';
-    resultEl.className='correct';
+  if(guessInput.value.trim() === currentPref.name){
     correctCount++;
-    regionScore[currentPref.region] = (regionScore[currentPref.region] || 0) + 1;
-  }else{
-    resultEl.textContent=`不正解… 正解は ${currentPref.name}`;
-    resultEl.className='wrong';
+    regionCorrect[currentPref.region] = (regionCorrect[currentPref.region]||0)+1;
+    resultEl.textContent = '正解！🎉'; resultEl.className='correct';
+  } else {
+    wrongCount++;
+    resultEl.textContent = `不正解… 正解は ${currentPref.name}`; resultEl.className='wrong';
   }
-  scoreEl.textContent=`正解 ${correctCount} / ${totalCount} 問`;
-  setTimeout(newQuestion,1000);
+  scoreEl.textContent = `正解 ${correctCount} / ${totalCount}`;
+  setTimeout(nextQuestion,1000);
+};
+
+document.getElementById('hintBtn').onclick = () => {
+  hintCount++;
+  hintEl.style.display = 'flex';
+  hintEl.textContent = `県庁所在地：${currentPref.hint}`;
+};
+
+function endGame(){
+  document.getElementById('gameArea').style.display = 'none';
+  document.getElementById('resultScreen').style.display = 'flex';
+
+  const date = new Date();
+  document.getElementById('date').textContent = 'プレイ日: '+date.toLocaleString();
+  document.getElementById('finalScore').innerHTML = `最終スコア: <b>${correctCount*60 - wrongCount*60 - hintCount*30}点</b>`;
+
+  let detail = `正解: ${correctCount}問 / 不正解: ${wrongCount}問 / ヒント: ${hintCount}回\n`;
+  for(const region in regionCorrect){
+    detail += `${region}: ${regionCorrect[region]}問\n`;
+  }
+  document.getElementById('finalDetails').innerHTML = detail;
+
+  scoreEl.textContent = '';
 }
+
+function takeScreenshot(){
+  html2canvas(document.getElementById('resultScreen')).then(canvas => {
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL('image/png');
+    link.download = 'score.png';
+    link.click();
+  });
+}
+
+function shareOnLINE(){
+  const scoreText = document.getElementById('finalScore').innerText;
+  const detailsText = document.getElementById('finalDetails').innerText;
+  const dateText = document.getElementById('date').innerText;
+  const gameUrl = 'https://akkyommm-crypto.github.io/todofuken-game/';
+
+  const message = `【都道府県形当てゲーム】\n${scoreText}\n${detailsText}\n${dateText}\n\nここから遊べるよ👇\n${gameUrl}`;
+  window.open('https://line.me/R/msg/text/?' + encodeURIComponent(message), '_blank');
+}
+
+document.getElementById('backBtn').onclick = () => { document.getElementById('modeSelect').style.display='flex'; document.getElementById('resultScreen').style.display='none'; };
+
 </script>
 </body>
 </html>
