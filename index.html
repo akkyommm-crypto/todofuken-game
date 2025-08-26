@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>都道府県形当てゲーム（重複なし7県版）</title>
+<title>都道府県形当てゲーム（全47県版）</title>
 <style>
 body{font-family:sans-serif;display:flex;flex-direction:column;align-items:center;margin:10px;}
 #prefImg{width:90%;max-width:400px;margin:10px 0;border:1px solid #ccc;border-radius:8px;}
 input,button{font-size:18px;padding:12px;margin:5px;border-radius:6px;width:90%;max-width:400px;}
 .correct{color:#0a0;font-weight:bold;}
 .wrong{color:#c00;font-weight:bold;}
-#score{margin:5px;font-size:16px;}
+#score{margin:5px;font-size:16px;white-space:pre-line;}
 </style>
 </head>
 <body>
@@ -24,19 +24,60 @@ input,button{font-size:18px;padding:12px;margin:5px;border-radius:6px;width:90%;
 <p id="score"></p>
 
 <script>
-// 7県分の画像データ
+// 47都道府県データ（画像ファイル名・地方を追加）
 const prefectures = [
-  {name:'北海道', img:'hokkaidou.png'},
-  {name:'秋田県', img:'akita.png'},
-  {name:'青森県', img:'aomori.png'},
-  {name:'福島県', img:'fukushima.png'},
-  {name:'岩手県', img:'iwate.png'},
-  {name:'宮城県', img:'miyagi.png'},
-  {name:'山形県', img:'yamagata.png'}
+  {name:'北海道', img:'hokkaido.png', region:'北海道地方'},
+  {name:'青森県', img:'aomori.png', region:'東北地方'},
+  {name:'岩手県', img:'iwate.png', region:'東北地方'},
+  {name:'宮城県', img:'miyagi.png', region:'東北地方'},
+  {name:'秋田県', img:'akita.png', region:'東北地方'},
+  {name:'山形県', img:'yamagata.png', region:'東北地方'},
+  {name:'福島県', img:'fukushima.png', region:'東北地方'},
+  {name:'茨城県', img:'ibaraki.png', region:'関東地方'},
+  {name:'栃木県', img:'tochigi.png', region:'関東地方'},
+  {name:'群馬県', img:'gunma.png', region:'関東地方'},
+  {name:'埼玉県', img:'saitama.png', region:'関東地方'},
+  {name:'千葉県', img:'chiba.png', region:'関東地方'},
+  {name:'東京都', img:'tokyo.png', region:'関東地方'},
+  {name:'神奈川県', img:'kanagawa.png', region:'関東地方'},
+  {name:'新潟県', img:'niigata.png', region:'中部地方'},
+  {name:'富山県', img:'toyama.png', region:'中部地方'},
+  {name:'石川県', img:'ishikawa.png', region:'中部地方'},
+  {name:'福井県', img:'fukui.png', region:'中部地方'},
+  {name:'山梨県', img:'yamanashi.png', region:'中部地方'},
+  {name:'長野県', img:'nagano.png', region:'中部地方'},
+  {name:'岐阜県', img:'gifu.png', region:'中部地方'},
+  {name:'静岡県', img:'shizuoka.png', region:'中部地方'},
+  {name:'愛知県', img:'aichi.png', region:'中部地方'},
+  {name:'三重県', img:'mie.png', region:'近畿地方'},
+  {name:'滋賀県', img:'shiga.png', region:'近畿地方'},
+  {name:'京都府', img:'kyoto.png', region:'近畿地方'},
+  {name:'大阪府', img:'osaka.png', region:'近畿地方'},
+  {name:'兵庫県', img:'hyogo.png', region:'近畿地方'},
+  {name:'奈良県', img:'nara.png', region:'近畿地方'},
+  {name:'和歌山県', img:'wakayama.png', region:'近畿地方'},
+  {name:'鳥取県', img:'tottori.png', region:'中国地方'},
+  {name:'島根県', img:'shimane.png', region:'中国地方'},
+  {name:'岡山県', img:'okayama.png', region:'中国地方'},
+  {name:'広島県', img:'hiroshima.png', region:'中国地方'},
+  {name:'山口県', img:'yamaguchi.png', region:'中国地方'},
+  {name:'徳島県', img:'tokushima.png', region:'四国地方'},
+  {name:'香川県', img:'kagawa.png', region:'四国地方'},
+  {name:'愛媛県', img:'ehime.png', region:'四国地方'},
+  {name:'高知県', img:'kochi.png', region:'四国地方'},
+  {name:'福岡県', img:'fukuoka.png', region:'九州地方'},
+  {name:'佐賀県', img:'saga.png', region:'九州地方'},
+  {name:'長崎県', img:'nagasaki.png', region:'九州地方'},
+  {name:'熊本県', img:'kumamoto.png', region:'九州地方'},
+  {name:'大分県', img:'oita.png', region:'九州地方'},
+  {name:'宮崎県', img:'miyazaki.png', region:'九州地方'},
+  {name:'鹿児島県', img:'kagoshima.png', region:'九州地方'},
+  {name:'沖縄県', img:'okinawa.png', region:'九州地方'}
 ];
 
-let remainingPrefectures = [...prefectures]; // 出題済み管理用
+let remainingPrefectures = [...prefectures];
 let currentPref, correctCount=0, totalCount=0;
+const regionScore = {}; // 地方ごとの正解数
 
 const prefImg=document.getElementById('prefImg');
 const guessInput=document.getElementById('guess');
@@ -46,7 +87,11 @@ const scoreEl=document.getElementById('score');
 
 function newQuestion(){
   if(remainingPrefectures.length === 0){
-    resultEl.textContent = `全問終了！正解 ${correctCount} / ${totalCount} 問`;
+    let regionText = '';
+    for(const region in regionScore){
+      regionText += `${region} ${regionScore[region]}問正解\n`;
+    }
+    resultEl.textContent = `全問終了！正解 ${correctCount}/${totalCount} 問\n` + regionText;
     prefImg.src = '';
     return;
   }
@@ -55,7 +100,7 @@ function newQuestion(){
   prefImg.src = currentPref.img;
   guessInput.value = '';
   resultEl.textContent = '';
-  remainingPrefectures.splice(index,1); // 出題済みとして削除
+  remainingPrefectures.splice(index,1);
 }
 
 checkBtn.onclick=()=>{
@@ -65,6 +110,7 @@ checkBtn.onclick=()=>{
     resultEl.textContent='正解！🎉';
     resultEl.className='correct';
     correctCount++;
+    regionScore[currentPref.region] = (regionScore[currentPref.region] || 0) + 1;
   }else{
     resultEl.textContent=`不正解… 正解は ${currentPref.name}`;
     resultEl.className='wrong';
