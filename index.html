@@ -71,6 +71,7 @@ input { width:100%; max-width:300px; padding:12px; border-radius:8px; border:non
   <button onclick="startMode('shikoku')">四国地方</button>
   <button onclick="startMode('kyushu')">九州地方</button>
   <button onclick="startMode('all')">47都道府県</button>
+  <button onclick="startKanjiMode()">漢字4択モード</button>
 </div>
 
 <div id="gameArea" style="display:none;">
@@ -108,6 +109,13 @@ input { width:100%; max-width:300px; padding:12px; border-radius:8px; border:non
   </div>
 </div>
 
+<div id="kanjiModeArea" style="display:none;">
+  <img id="kanjiPrefImg" src="" alt="都道府県の形">
+  <div id="kanjiResult"></div>
+  <div id="kanjiButtons"></div>
+  <button id="kanjiBackBtn">モード選択に戻る</button>
+</div>
+  
 <script>
 // 都道府県データ（47都道府県サンプル）
 const prefectures=[
@@ -276,101 +284,13 @@ function closeModal(){
     setTimeout(()=>{ modal.style.display='none'; },300);
 }
 </script>
-  <!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<title>都道府県ゲーム</title>
-<style>
-body { font-family:sans-serif; text-align:center; background:linear-gradient(135deg,#4facfe,#00f2fe); color:#fff; }
-button { padding:10px 20px; margin:5px; border-radius:8px; border:none; font-size:16px; cursor:pointer; }
-#kanjiModeArea, #gameArea { display:none; max-width:350px; margin:20px auto; }
-#kanjiButtons { display:flex; flex-direction:column; gap:10px; margin:10px auto; }
-#kanjiPrefImg, #prefImg { width:300px; height:300px; object-fit:contain; border:3px solid #fff; border-radius:12px; margin:20px auto; }
-#kanjiResult, #result { min-height:40px; font-size:18px; font-weight:bold; margin:10px auto; }
-</style>
-</head>
-<body>
-
-<h1>都道府県ゲーム</h1>
-
-<div id="modeSelect">
-  <button onclick="startRegionMode('東北')">東北モード</button>
-  <button onclick="startRegionMode('関東')">関東モード</button>
-  <button onclick="startRegionMode('全都道府県')">47都道府県モード</button>
-  <button onclick="startKanjiMode()">漢字4択モード</button>
-</div>
-
-<!-- 漢字4択モード -->
-<div id="kanjiModeArea">
-  <img id="kanjiPrefImg" src="" alt="都道府県の形">
-  <div id="kanjiResult"></div>
-  <div id="kanjiButtons"></div>
-  <button id="kanjiBackBtn">モード選択に戻る</button>
-</div>
-
-<!-- 画像入力モード（既存ゲーム） -->
-<div id="gameArea">
-  <img id="prefImg" src="" alt="都道府県の形">
-  <input type="text" id="guess" placeholder="都道府県名を入力">
-  <button id="checkBtn">答え合わせ</button>
-  <button id="hintBtn">ヒントを見る</button>
-  <div id="result"></div>
-  <div id="score"></div>
-  <div id="hint"></div>
-  <button id="backBtn">モード選択に戻る</button>
-</div>
 
 <script>
-// ----------------- 漢字4択モード -----------------
 const kanjiPrefectures = [
   {name:"北海道", img:"hokkaido.png", options:["北海道","北陸道","北島道","北道"]},
   {name:"青森県", img:"aomori.png", options:["青森県","靑森県","蒼森県","青杜県"]},
-  {name:"岩手県", img:"iwate.png", options:["岩手県","岩戸県","巌手県","岩森県"]},
-  {name:"宮城県", img:"miyagi.png", options:["宮城県","宮森県","宮川県","宮崎県"]},
-  {name:"秋田県", img:"akita.png", options:["秋田県","穐田県","秋田市","秋田町"]},
-  {name:"山形県", img:"yamagata.png", options:["山形県","山片県","山形市","山川県"]},
-  {name:"福島県", img:"fukushima.png", options:["福島県","福嶋県","福嶋市","福住県"]},
-  {name:"茨城県", img:"ibaraki.png", options:["茨城県","茨島県","茨木県","茨城市"]},
-  {name:"栃木県", img:"tochigi.png", options:["栃木県","橡木県","栃木市","栃谷県"]},
-  {name:"群馬県", img:"gunma.png", options:["群馬県","群林県","郡馬県","群馬市"]},
-  {name:"埼玉県", img:"saitama.png", options:["埼玉県","埼田県","埼玉市","彩玉県"]},
-  {name:"千葉県", img:"chiba.png", options:["千葉県","千波県","千葉市","千場県"]},
-  {name:"東京都", img:"tokyo.png", options:["東京都","東京都市","東京区","東京府"]},
-  {name:"神奈川県", img:"kanagawa.png", options:["神奈川県","神川県","神奈市","神奈町"]},
-  {name:"新潟県", img:"niigata.png", options:["新潟県","新潟市","新潟町","新賀県"]},
-  {name:"富山県", img:"toyama.png", options:["富山県","富山市","富川県","富岳県"]},
-  {name:"石川県", img:"ishikawa.png", options:["石川県","石河県","石川市","石門県"]},
-  {name:"福井県", img:"fukui.png", options:["福井県","福居県","福井市","福生県"]},
-  {name:"山梨県", img:"yamanashi.png", options:["山梨県","山無県","山成県","山中県"]},
-  {name:"長野県", img:"nagano.png", options:["長野県","長野市","長州県","長野町"]},
-  {name:"岐阜県", img:"gifu.png", options:["岐阜県","岐阜市","岐布県","岐川県"]},
-  {name:"静岡県", img:"shizuoka.png", options:["静岡県","静岡市","静川県","静岡町"]},
-  {name:"愛知県", img:"aichi.png", options:["愛知県","愛地県","愛知市","愛知町"]},
-  {name:"三重県", img:"mie.png", options:["三重県","三枝県","三重市","三重町"]},
-  {name:"滋賀県", img:"shiga.png", options:["滋賀県","滋川県","滋賀市","滋賀町"]},
-  {name:"京都府", img:"kyoto.png", options:["京都府","京都市","京都町","京都郡"]},
-  {name:"大阪府", img:"osaka.png", options:["大阪府","大坂府","大阪市","大阪町"]},
-  {name:"兵庫県", img:"hyogo.png", options:["兵庫県","兵后県","兵庫市","兵庫町"]},
-  {name:"奈良県", img:"nara.png", options:["奈良県","奈良市","奈良町","奈良郡"]},
-  {name:"和歌山県", img:"wakayama.png", options:["和歌山県","和歌山市","和歌山町","和歌川県"]},
-  {name:"鳥取県", img:"tottori.png", options:["鳥取県","鳥取市","鳥門県","鳥取町"]},
-  {name:"島根県", img:"shimane.png", options:["島根県","島根市","島根町","島根郡"]},
-  {name:"岡山県", img:"okayama.png", options:["岡山県","岡山市","岡山町","岡川県"]},
-  {name:"広島県", img:"hiroshima.png", options:["広島県","広島市","広島町","広島川"]},
-  {name:"山口県", img:"yamaguchi.png", options:["山口県","山口市","山口町","山口郡"]},
-  {name:"徳島県", img:"tokushima.png", options:["徳島県","徳島市","徳島町","徳島郡"]},
-  {name:"香川県", img:"kagawa.png", options:["香川県","香川県市","香川県町","香川県郡"]},
-  {name:"愛媛県", img:"ehime.png", options:["愛媛県","愛媛市","愛媛町","愛媛郡"]},
-  {name:"高知県", img:"kochi.png", options:["高知県","高知市","高知町","高知郡"]},
-  {name:"福岡県", img:"fukuoka.png", options:["福岡県","福岡市","福岡町","福岡郡"]},
-  {name:"佐賀県", img:"saga.png", options:["佐賀県","佐賀市","佐賀町","佐賀郡"]},
-  {name:"長崎県", img:"nagasaki.png", options:["長崎県","長崎市","長崎町","長崎郡"]},
-  {name:"熊本県", img:"kumamoto.png", options:["熊本県","熊本市","熊本町","熊本郡"]},
-  {name:"大分県", img:"oita.png", options:["大分県","大分市","大分町","大分郡"]},
-  {name:"宮崎県", img:"miyazaki.png", options:["宮崎県","宮崎市","宮崎町","宮崎郡"]},
-  {name:"鹿児島県", img:"kagoshima.png", options:["鹿児島県","鹿児島市","鹿児島町","鹿児島郡"]},
-  {name:"沖縄県", img:"okinawa.png", options:["沖縄県","沖縄市","沖縄町","沖縄郡"]}
+  {name:"岩手県", img:"iwate.png", options:["岩手県","岩戸県","巌手県","岩森県"]}
+  // 他の都道府県も追加可能
 ];
 
 let kanjiRemaining=[], kanjiCurrent=null;
@@ -378,7 +298,7 @@ let kanjiRemaining=[], kanjiCurrent=null;
 function startKanjiMode(){
   document.getElementById('modeSelect').style.display='none';
   document.getElementById('kanjiModeArea').style.display='flex';
-  kanjiRemaining=[...kanjiPrefectures];
+  kanjiRemaining = [...kanjiPrefectures];
   nextKanjiQuestion();
 }
 
@@ -409,28 +329,16 @@ function nextKanjiQuestion(){
         document.getElementById('kanjiResult').style.color="#f33";
       }
       setTimeout(nextKanjiQuestion,1000);
-    }
+    };
     btnContainer.appendChild(btn);
   });
 }
 
-document.getElementById('kanjiBackBtn').onclick=()=>{
+document.getElementById('kanjiBackBtn').onclick = ()=>{
   document.getElementById('kanjiModeArea').style.display='none';
   document.getElementById('modeSelect').style.display='flex';
-}
-
-// ----------------- 画像入力モード（既存ゲーム） -----------------
-function startRegionMode(region){
-  alert(region+"モードスタート！（既存ゲーム関数をここで呼ぶ）");
-  document.getElementById('modeSelect').style.display='none';
-  document.getElementById('gameArea').style.display='flex';
-}
-
-document.getElementById('backBtn').onclick=()=>{
-  document.getElementById('gameArea').style.display='none';
-  document.getElementById('modeSelect').style.display='flex';
-}
+};
 </script>
-
+  
 </body>
 </html>
