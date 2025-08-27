@@ -16,9 +16,7 @@ body {
   background: linear-gradient(135deg,#56ccf2,#2f80ed);
   color:#fff;
 }
-h2 {
-  text-shadow:2px 2px 6px rgba(0,0,0,0.3);
-}
+h2 { text-shadow:2px 2px 6px rgba(0,0,0,0.3); }
 button {
   background-color:#ffe066;
   color:#222;
@@ -84,19 +82,40 @@ input {
 @keyframes pop { 0%{transform:scale(0.5);} 100%{transform:scale(1);} }
 @keyframes shake { 0%,100%{transform:translateX(0);} 20%,60%{transform:translateX(-5px);} 40%,80%{transform:translateX(5px);} }
 
-#modeSelect,#gameArea,#resultScreen {
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-}
+#modeSelect,#gameArea,#resultScreen { display:flex; flex-direction:column; align-items:center; }
 #gameArea,#modeSelect { max-width:350px; margin:0 auto; }
-#gameArea {
-  background:rgba(255,255,255,0.85);
-  border-radius:16px;
-  padding:20px;
-  color:#222;
-}
+#gameArea { background:rgba(255,255,255,0.85); border-radius:16px; padding:20px; color:#222; }
 #resultScreen { max-width:350px; margin:0 auto; color:#fff; }
+
+/* モーダル */
+.modal {
+  display:none;
+  position:fixed;
+  z-index:1000;
+  left:0; top:0; width:100%; height:100%;
+  background:rgba(0,0,0,0.6);
+  justify-content:center;
+  align-items:center;
+  opacity:0;
+  transition: opacity 0.3s ease;
+}
+.modal.show { display:flex; opacity:1; }
+.modal-content {
+  background:#fff;
+  color:#222;
+  padding:20px;
+  border-radius:12px;
+  max-width:450px;
+  width:90%;
+  text-align:center;
+  box-shadow:0 5px 20px rgba(0,0,0,0.3);
+  transform: translateY(-30px);
+  transition: transform 0.3s ease;
+}
+.modal.show .modal-content { transform: translateY(0); }
+#regionTable { width:100%; border-collapse:collapse; margin-top:15px; }
+#regionTable th, #regionTable td { border:1px solid #ccc; padding:8px; }
+#regionTable th { background:#f0f0f0; }
 </style>
 </head>
 <body>
@@ -128,14 +147,28 @@ input {
   <h2>お疲れ様でした！🎉</h2>
   <p id="date"></p>
   <p id="finalScore"></p>
-  <p id="finalDetails"></p>
+  <button onclick="openModal()">📊 地方別正解を見る</button>
   <button onclick="takeScreenshot()">📸 スクリーンショット</button>
   <button onclick="shareOnLINE()">💬 LINEでシェア</button>
   <button onclick="backToMenu()">⬅️ モード選択に戻る</button>
 </div>
 
+<!-- モーダル -->
+<div id="detailModal" class="modal">
+  <div class="modal-content">
+    <h3>地方別の正解数</h3>
+    <table id="regionTable">
+      <thead>
+        <tr><th>地方</th><th>正解数</th></tr>
+      </thead>
+      <tbody id="regionDetails"></tbody>
+    </table>
+    <button onclick="closeModal()">閉じる</button>
+  </div>
+</div>
+
 <script>
-// 47都道府県データ（ヒント＝県庁所在地）
+// 都道府県データ（サンプル）
 const prefectures=[
 {name:'北海道', img:'hokkaido.png', region:'東北地方', hint:'札幌市'},
 {name:'青森県', img:'aomori.png', region:'東北地方', hint:'青森市'},
@@ -184,7 +217,6 @@ const prefectures=[
 {name:'宮崎県', img:'miyazaki.png', region:'九州地方', hint:'宮崎市'},
 {name:'鹿児島県', img:'kagoshima.png', region:'九州地方', hint:'鹿児島市'},
 {name:'沖縄県', img:'okinawa.png', region:'九州地方', hint:'那覇市'}
-
 ];
 
 let remaining=[], currentPref, correctCount=0, wrongCount=0, hintCount=0, totalCount=0;
@@ -195,7 +227,6 @@ const resultEl=document.getElementById('result');
 const scoreEl=document.getElementById('score');
 const hintEl=document.getElementById('hint');
 
-// 共通戻る関数
 function backToMenu(){
     document.getElementById('modeSelect').style.display='flex';
     document.getElementById('gameArea').style.display='none';
@@ -203,10 +234,8 @@ function backToMenu(){
     remaining=[]; currentPref=null; correctCount=0; wrongCount=0; hintCount=0; totalCount=0; regionCorrect={};
     prefImg.src=''; guessInput.value=''; resultEl.textContent=''; hintEl.style.display='none'; scoreEl.textContent='';
 }
-
 document.getElementById('backBtn').onclick=backToMenu;
 
-// ゲーム開始
 function startMode(mode){
     if(mode==='all'){ remaining=[...prefectures]; }
     else remaining=prefectures.filter(p=>{
@@ -225,7 +254,6 @@ function startMode(mode){
     nextQuestion();
 }
 
-// 次の問題
 function nextQuestion(){
     if(remaining.length===0){ endGame(); return; }
     const idx=Math.floor(Math.random()*remaining.length);
@@ -235,7 +263,6 @@ function nextQuestion(){
     scoreEl.textContent=`正解 ${correctCount} / ${totalCount}`;
 }
 
-// 答え合わせ
 document.getElementById('checkBtn').onclick=()=>{
     totalCount++;
     if(guessInput.value.trim()===currentPref.name){
@@ -249,13 +276,11 @@ document.getElementById('checkBtn').onclick=()=>{
     setTimeout(nextQuestion,1000);
 }
 
-// ヒント
 document.getElementById('hintBtn').onclick=()=>{
     hintCount++; hintEl.style.display='flex';
     hintEl.textContent=`県庁所在地：${currentPref.hint}`;
 }
 
-// ゲーム終了
 function endGame(){
     document.getElementById('gameArea').style.display='none';
     document.getElementById('resultScreen').style.display='flex';
@@ -263,12 +288,8 @@ function endGame(){
     document.getElementById('date').textContent='プレイ日: '+date.toLocaleString();
     const finalScore=correctCount*60 - wrongCount*60 - hintCount*30;
     document.getElementById('finalScore').innerHTML=`最終スコア: <b>${finalScore}点</b>`;
-    let detail=`正解: ${correctCount}問 / 不正解: ${wrongCount}問 / ヒント: ${hintCount}回\n`;
-    for(const region in regionCorrect) detail+=`${region}: ${regionCorrect[region]}問\n`;
-    document.getElementById('finalDetails').innerText=detail;
 }
 
-// スクリーンショット
 function takeScreenshot(){
     html2canvas(document.getElementById('resultScreen')).then(canvas=>{
         const link=document.createElement('a');
@@ -276,14 +297,35 @@ function takeScreenshot(){
     });
 }
 
-// LINEシェア
 function shareOnLINE(){
     const scoreText=document.getElementById('finalScore').innerText;
-    const detailsText=document.getElementById('finalDetails').innerText;
     const dateText=document.getElementById('date').innerText;
     const gameUrl='https://akkyommm-crypto.github.io/todofuken-game/';
-    const message=`【都道府県形当てゲーム】\n${scoreText}\n${detailsText}\n${dateText}\n\nここから遊べるよ👇\n${gameUrl}`;
+    const message=`【都道府県形当てゲーム】\n${scoreText}\n${dateText}\n\nここから遊べるよ👇\n${gameUrl}`;
     window.open('https://line.me/R/msg/text/?'+encodeURIComponent(message),'_blank');
+}
+
+// モーダル
+const regionOrder = ['東北地方','関東地方','中部地方','近畿地方','中国地方','四国地方','九州地方'];
+function openModal(){
+    const tbody=document.getElementById('regionDetails');
+    tbody.innerHTML="";
+    regionOrder.forEach(region=>{
+        const count=regionCorrect[region]||0;
+        const tr=document.createElement("tr");
+        const td1=document.createElement("td"); td1.textContent=region;
+        const td2=document.createElement("td"); td2.textContent=count+"問";
+        tr.appendChild(td1); tr.appendChild(td2);
+        tbody.appendChild(tr);
+    });
+    const modal=document.getElementById('detailModal');
+    modal.style.display='flex';
+    setTimeout(()=>modal.classList.add('show'),10); // フェードイン
+}
+function closeModal(){
+    const modal=document.getElementById('detailModal');
+    modal.classList.remove('show');
+    setTimeout(()=>{ modal.style.display='none'; },300); // フェードアウト
 }
 </script>
 </body>
