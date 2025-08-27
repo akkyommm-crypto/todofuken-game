@@ -232,11 +232,18 @@ function endGame(){
 }
 
 function takeScreenshot(){
-    html2canvas(document.getElementById('resultScreen')).then(canvas=>{
+    html2canvas(document.getElementById('resultScreen'), {
+        backgroundColor: null, // 元の背景を反映
+        scale: 2,               // 高解像度にする
+        useCORS: true           // 画像が外部でも描画できるように
+    }).then(canvas=>{
         const link=document.createElement('a');
-        link.href=canvas.toDataURL('image/png'); link.download='score.png'; link.click();
+        link.href=canvas.toDataURL('image/png');
+        link.download='score.png';
+        link.click();
     });
 }
+
 
 function shareOnLINE(){
     const scoreText=document.getElementById('finalScore').innerText;
