@@ -109,11 +109,15 @@ input { width:100%; max-width:300px; padding:12px; border-radius:8px; border:non
   </div>
 </div>
 
-<div id="kanjiModeArea" style="display:none;">
-  <img id="kanjiPrefImg" src="" alt="都道府県の形">
-  <div id="kanjiResult"></div>
-  <div id="kanjiButtons"></div>
-  <button id="kanjiBackBtn">モード選択に戻る</button>
+ <!-- 漢字４択 -->
+<div id="kanjiModeArea" class="gameAreaStyle" style="display:none;">
+  <img id="kanjiPrefImg" class="gameImage" src="" alt="都道府県の形">
+
+  <div id="kanjiButtons" style="width:100%; display:flex; flex-direction:column; gap:10px; margin:10px 0;"></div>
+
+  <div id="kanjiResult" style="min-height:40px; font-size:18px; font-weight:bold; margin:10px 0;"></div>
+
+  <button id="kanjiBackBtn" class="gameButton">モード選択に戻る</button>
 </div>
   
 <script>
@@ -283,9 +287,7 @@ function closeModal(){
     modal.classList.remove('show');
     setTimeout(()=>{ modal.style.display='none'; },300);
 }
-</script>
 
-<script>
 const kanjiPrefectures = [
   {name:"北海道", img:"hokkaido.png", options:["北海道","北陸道","北島道","北道"]},
   {name:"青森県", img:"aomori.png", options:["青森県","靑森県","蒼森県","青杜県"]},
@@ -297,6 +299,7 @@ let kanjiRemaining=[], kanjiCurrent=null;
 
 function startKanjiMode(){
   document.getElementById('modeSelect').style.display='none';
+  document.getElementById('gameArea').style.display='none'; // 既存ゲーム非表示
   document.getElementById('kanjiModeArea').style.display='flex';
   kanjiRemaining = [...kanjiPrefectures];
   nextKanjiQuestion();
@@ -320,6 +323,7 @@ function nextKanjiQuestion(){
   shuffledOptions.forEach(opt=>{
     const btn = document.createElement("button");
     btn.textContent = opt;
+    btn.className = "gameButton"; // 既存ゲームボタンと同じスタイル
     btn.onclick = ()=>{
       if(opt === kanjiCurrent.name){
         document.getElementById('kanjiResult').textContent="正解！🎉";
@@ -338,6 +342,8 @@ document.getElementById('kanjiBackBtn').onclick = ()=>{
   document.getElementById('kanjiModeArea').style.display='none';
   document.getElementById('modeSelect').style.display='flex';
 };
+
+
 </script>
   
 </body>
