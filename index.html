@@ -71,7 +71,7 @@ input { width:100%; max-width:300px; padding:12px; border-radius:8px; border:non
   <button onclick="startMode('shikoku')">四国地方</button>
   <button onclick="startMode('kyushu')">九州地方</button>
   <button onclick="startMode('all')">47都道府県</button>
-  <button onclick="startKanjiMode()">漢字4択モード</button>
+  
 </div>
 
 <div id="gameArea" style="display:none;">
@@ -109,16 +109,7 @@ input { width:100%; max-width:300px; padding:12px; border-radius:8px; border:non
   </div>
 </div>
 
- <!-- 漢字４択 -->
-<div id="kanjiModeArea" class="gameAreaStyle" style="display:none;">
-  <img id="kanjiPrefImg" class="gameImage" src="" alt="都道府県の形">
 
-  <div id="kanjiButtons" style="width:100%; display:flex; flex-direction:column; gap:10px; margin:10px 0;"></div>
-
-  <div id="kanjiResult" style="min-height:40px; font-size:18px; font-weight:bold; margin:10px 0;"></div>
-
-  <button id="kanjiBackBtn" class="gameButton">モード選択に戻る</button>
-</div>
   
 <script>
 // 都道府県データ（47都道府県サンプル）
